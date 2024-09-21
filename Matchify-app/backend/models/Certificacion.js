@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según sea necesario
-import User from './User'; // Asegúrate de que el modelo User esté correctamente importado
+import sequelize from '../config/database.js'; // Ajusta la ruta según sea necesario
+import User from './User.js'; // Asegúrate de que el modelo User esté correctamente importado
 
 const Certificacion = sequelize.define('Certificacion', {
     nombre: {

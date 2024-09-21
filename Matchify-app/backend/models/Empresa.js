@@ -1,7 +1,7 @@
 // models/Empresa.js
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
-import Industria from './Industria'; // Importar el modelo Industria para asegurar que esté referenciado correctamente
+import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import Industria from './Industria.js'; // Importar el modelo Industria para asegurar que esté referenciado correctamente
 
 const Empresa = sequelize.define('Empresa', {
     nombre: {

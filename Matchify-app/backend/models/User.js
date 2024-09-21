@@ -1,19 +1,18 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
-import OfertaEmpleo from './OfertaEmpleo'; // Asegúrate de que la ruta sea correcta
+import sequelize from '../config/database.js';
 
 const User = sequelize.define('User', {
     username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true, // Considera agregar esta validación para que los usernames sean únicos
+        unique: true,
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true, // Asegúrate de que los correos sean únicos
+        unique: true,
         validate: {
-            isEmail: true, // Validación para el formato de email
+            isEmail: true,
         },
     },
     password: {
@@ -28,8 +27,5 @@ const User = sequelize.define('User', {
     timestamps: true,
     tableName: 'users',
 });
-
-// Asociaciones directas que no generan ciclos
-User.hasMany(OfertaEmpleo, { foreignKey: 'userId', as: 'ofertasEmpleo' });
 
 export default User;

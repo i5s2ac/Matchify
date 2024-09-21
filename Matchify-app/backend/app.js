@@ -1,15 +1,36 @@
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3001;
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes.js';
+import sequelize from './config/database.js'; // Importa la conexión a la base de datos
+import defineAssociations from './models/associations.js'; // Importa las asociaciones
 
+dotenv.config();
+
+const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Rutas (puedes definir las rutas más adelante)
+// Definir las asociaciones entre los modelos
+defineAssociations();
+
+// Rutas de autenticación
+app.use('/auth', authRoutes);
+
+
+// Endpoint "Hola Mundo"
 app.get('/', (req, res) => {
-    res.send('¡Hola, mundo!');
+    res.send('Backend Corriendo');
 });
 
-// Inicia el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// Sincronizar los modelos con la base de datos y luego iniciar el servidor
+const PORT = process.env.PORT || 3001;
+sequelize.sync({ alter: true }) // Esto ajusta las tablas si es necesario
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Unable to connect to the database:', err);
+    });

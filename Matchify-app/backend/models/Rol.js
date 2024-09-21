@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
+import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
 
 const Rol = sequelize.define('Rol', {
     nombre: {

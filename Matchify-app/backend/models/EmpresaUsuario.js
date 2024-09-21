@@ -1,9 +1,9 @@
 // models/EmpresaUsuario.js
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
-import Empresa from './Empresa';
-import User from './User';
-import Rol from './Rol';
+import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import Empresa from './Empresa.js';
+import User from './User.js';
+import Rol from './Rol.js';
 
 const EmpresaUsuario = sequelize.define('EmpresaUsuario', {
     empresaId: {

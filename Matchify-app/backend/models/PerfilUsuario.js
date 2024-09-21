@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
-import User from './User'; // Asegúrate de que la ruta sea correcta
+import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import User from './User.js'; // Asegúrate de que la ruta sea correcta
 
 const PerfilUsuario = sequelize.define('PerfilUsuario', {
     resumenProfesional: {

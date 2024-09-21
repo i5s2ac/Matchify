@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database';
-import OfertaEmpleo from './OfertaEmpleo'; // Mantén las importaciones directas
-import User from './User'; // Importa el modelo `User` directamente si es posible
+import sequelize from '../config/database.js';
+import OfertaEmpleo from './OfertaEmpleo.js'; // Mantén las importaciones directas
+import User from './User.js'; // Importa el modelo `User` directamente si es posible
 
 const CandidatoOferta = sequelize.define('CandidatoOferta', {
     estado: {

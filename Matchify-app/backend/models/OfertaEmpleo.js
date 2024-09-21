@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Ajusta la ruta según la ubicación de database.js
-import Empresa from './Empresa'; // Asegúrate de que la ruta sea correcta
-import User from './User'; // Asegúrate de que la ruta sea correcta
+import sequelize from '../config/database.js';
 
 const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
     titulo: {
@@ -17,37 +15,26 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
     },
     ubicacion: {
         type: DataTypes.STRING,
-        allowNull: true, // Ajusta esto según tus necesidades
+        allowNull: true,
     },
     salario: {
         type: DataTypes.DECIMAL,
-        allowNull: true, // Permite que sea opcional
+        allowNull: true,
     },
     fechaPublicacion: {
         type: DataTypes.DATE,
-        allowNull: true, // Permite que sea opcional
+        allowNull: true,
     },
     fechaCierre: {
         type: DataTypes.DATE,
-        allowNull: true, // Permite que sea opcional
+        allowNull: true,
     },
     empresaId: {
         type: DataTypes.INTEGER,
-        references: {
-            model: Empresa,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        allowNull: false,
     },
     userId: {
         type: DataTypes.INTEGER,
-        references: {
-            model: User,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
         allowNull: false,
     },
     estatus: {
@@ -59,13 +46,13 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
         type: DataTypes.TEXT,
         get() {
             const rawValue = this.getDataValue('tags');
-            return rawValue ? rawValue.split(',') : []; // Devuelve como array
+            return rawValue ? rawValue.split(',') : [];
         },
         set(value) {
             if (Array.isArray(value)) {
-                this.setDataValue('tags', value.join(',')); // Almacena como string
+                this.setDataValue('tags', value.join(','));
             } else {
-                throw new Error('Los tags deben ser un arreglo.'); // Error de validación
+                throw new Error('Los tags deben ser un arreglo.');
             }
         },
     },
@@ -95,17 +82,13 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    Competencias__Requerimiento: { // Verifica si el doble guion bajo es intencional
+    Competencias__Requerimiento: {
         type: DataTypes.STRING,
         allowNull: true,
     },
 }, {
     tableName: 'ofertas_empleos',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true,
 });
-
-// Definir las asociaciones
-OfertaEmpleo.belongsTo(Empresa, { foreignKey: 'empresaId', as: 'empresa' });
-OfertaEmpleo.belongsTo(User, { foreignKey: 'userId', as: 'usuario' });
 
 export default OfertaEmpleo;
