@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -7,6 +8,7 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -20,6 +22,7 @@ const Register = () => {
             });
             // Manejar la respuesta de éxito, redirigir o mostrar un mensaje
             console.log('Registro exitoso:', response.data);
+            navigate(`/login`);
         } catch (error) {
             // Manejar errores, por ejemplo, mostrar un mensaje
             if (error.response) {
@@ -104,7 +107,7 @@ const Register = () => {
                         </div>
 
                         <div className="text-center mt-8">
-                            <p className="text-lg text-gray-700">Already have an account? <a href="/Matchify-app/frontend/src/pages/login" className="text-primary font-medium hover:text-secondary">Log in here.</a></p>
+                            <p className="text-lg text-gray-700">Already have an account? <a href="/login" className="text-primary font-medium hover:text-secondary">Log in here.</a></p>
                         </div>
                     </form>
 

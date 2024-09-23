@@ -85,7 +85,7 @@ const Login = () => {
                         </div>
                     </form>
                     <div className="text-center mt-8">
-                        <p className="text-lg text-gray-700">Don't have an account? <a href="/Matchify-app/frontend/src/pages/register" className="text-primary font-medium hover:text-secondary">Register here.</a></p>
+                        <p className="text-lg text-gray-700">Don't have an account? <a href="/register" className="text-primary font-medium hover:text-secondary">Register here.</a></p>
                     </div>
                 </div>
             </div>
