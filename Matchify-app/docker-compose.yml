@@ -17,9 +17,11 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "3000:3000"  # Cambia el puerto de 80 a 3000
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/usr/src/app  # Montar el código fuente del frontend
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Agrega la variable de entorno para habilitar el polling
 
   db:
     image: mysql:8.0

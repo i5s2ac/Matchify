@@ -20,7 +20,7 @@ const HomePage = () => {
                         <div
                             className="mb-8"
                             style={{
-                                backgroundImage: "url('/assets/images/Matchify_logo.png')",
+                                backgroundImage: "url('/images/Matchify_logo.png')",
                                 backgroundSize: "contain",
                                 backgroundRepeat: "no-repeat",
                                 backgroundPosition: "center",
@@ -59,7 +59,7 @@ const HomePage = () => {
             <div
                 className="w-1/2 bg-cover bg-center"
                 style={{
-                    backgroundImage: "url('/assets/images/Job_Recluit.png')",
+                    backgroundImage: "url('/images/Job_Recluit.png')",
                 }}
             ></div>
         </div>

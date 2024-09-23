@@ -1,26 +1,23 @@
-# Etapa de construcción
-FROM node:18 AS build-frontend
+# Usa una imagen de Node.js
+FROM node:18
 
-# Establece el directorio de trabajo
+# Establece el directorio de trabajo en el contenedor
 WORKDIR /usr/src/app
 
-# Copia solo los archivos de configuración para aprovechar la caché
+# Copia los archivos de configuración para instalar dependencias
 COPY package*.json ./
+
+# Instala las dependencias
 RUN npm install
 
-# Copia el resto de los archivos del frontend
+# Copia el código fuente local al contenedor
 COPY . .
 
-# Compila la aplicación de React
-RUN npm run build
+# Exponer el puerto 3000 para desarrollo
+EXPOSE 3000
 
-# Usa una imagen más ligera para servir la aplicación
-FROM nginx:alpine
+# Establecer variable de entorno para habilitar el hot-reloading
+ENV CHOKIDAR_USEPOLLING=true
 
-# Copia los archivos construidos al contenedor de Nginx
-COPY --from=build-frontend /usr/src/app/build /usr/share/nginx/html
-
-# Expone el puerto
-EXPOSE 80
-
-# Nginx ya tiene su propio comando de inicio, así que no es necesario especificar uno
+# Iniciar la aplicación en modo desarrollo
+CMD ["npm", "start"]
