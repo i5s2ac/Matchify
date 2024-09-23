@@ -1,13 +1,11 @@
-# Usa una imagen base de Node.js
-FROM node:18
+# Etapa de construcción
+FROM node:18 AS build-frontend
 
-# Establece el directorio de trabajo en el contenedor
+# Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copia el archivo package.json y package-lock.json
+# Copia solo los archivos de configuración para aprovechar la caché
 COPY package*.json ./
-
-# Instala las dependencias
 RUN npm install
 
 # Copia el resto de los archivos del frontend
@@ -16,8 +14,13 @@ COPY . .
 # Compila la aplicación de React
 RUN npm run build
 
-# Expone el puerto 3000
-EXPOSE 3000
+# Usa una imagen más ligera para servir la aplicación
+FROM nginx:alpine
 
-# Comando para ejecutar la aplicación
-CMD ["npm", "start"]
+# Copia los archivos construidos al contenedor de Nginx
+COPY --from=build-frontend /usr/src/app/build /usr/share/nginx/html
+
+# Expone el puerto
+EXPOSE 80
+
+# Nginx ya tiene su propio comando de inicio, así que no es necesario especificar uno

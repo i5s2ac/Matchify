@@ -1,19 +1,17 @@
-# Usa una imagen base de Node.js
-FROM node:18
+# Etapa de construcción
+FROM node:18 AS build-backend
 
-# Establece el directorio de trabajo en el contenedor
+# Establece el directorio de trabajo
 WORKDIR /usr/src/app
 
-# Copia el archivo package.json y package-lock.json
+# Copia solo los archivos de configuración para aprovechar la caché
 COPY package*.json ./
-
-# Instala las dependencias
 RUN npm install
 
 # Copia el resto de los archivos del backend
 COPY . .
 
-# Expone el puerto 3001
+# Expone el puerto
 EXPOSE 3001
 
 # Comando para ejecutar la aplicación
