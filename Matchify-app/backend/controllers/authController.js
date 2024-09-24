@@ -1,9 +1,17 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { findUserById, findUserByEmail, createUser, findEmpresaUsuarioByUserId } from '../repositories/userRepository.js'; // Importar el repositorio
+import {
+    findUserById,
+    findUserByEmail,
+    createUser,
+    findEmpresaUsuarioByUserId,
+    createEmpresa,
+    createEmpresaUsuario,
+    getAllIndustrias,
+    getOrCreateAdminRole
+} from '../repositories/userRepository.js';
 
 // Método para login
-// Controlador de login
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -37,7 +45,6 @@ export const login = async (req, res) => {
             empresaId: empresaUsuario ? empresaUsuario.empresaId : null,
             rolId: empresaUsuario ? empresaUsuario.rolId : null,
         });
-
     } catch (error) {
         console.error('Error during login:', error);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -47,8 +54,6 @@ export const login = async (req, res) => {
 // Método para registrar un nuevo usuario
 export const register = async (req, res) => {
     const { username, email, password, phone } = req.body;
-
-    console.log('Registro recibido:', { username, email, password, phone }); // Agrega esto
 
     try {
         const existingUser = await findUserByEmail(email);
@@ -69,6 +74,7 @@ export const register = async (req, res) => {
     }
 };
 
+// Método para obtener un usuario por ID
 export const getUserById = async (req, res) => {
     const { id } = req.params;
 
@@ -83,4 +89,68 @@ export const getUserById = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
+
+// Función para registrar una empresa junto con un usuario
+export const registerCompany = async (req, res) => {
+    const {
+        username,
+        email,
+        password,
+        phone,
+        companyName,
+        direccion,
+        descripcion,
+        sitioWeb,
+        industriaId
+    } = req.body;
+
+    if (!username || !email || !password || !phone || !companyName || !industriaId) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    try {
+        const existingUser = await findUserByEmail(email);
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email already in use' });
+        }
+
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const user = await createUser({ username, email, password: hashedPassword, telefono: phone });
+
+        const empresa = await createEmpresa({
+            nombre: companyName,
+            direccion,
+            telefono: phone,
+            email,
+            descripcion,
+            sitioWeb,
+            industriaId,
+        });
+
+        // Obtener o crear el rol 'Admin'
+        const adminRole = await getOrCreateAdminRole();
+
+        // Crear la relación Empresa-Usuario con el rol de admin
+        await createEmpresaUsuario({ empresaId: empresa.id, usuarioId: user.id, rolId: adminRole.id });
+
+        return res.status(201).json({ success: true, empresa, user });
+    } catch (error) {
+        console.error('Error registering company and user:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+
+export const getIndustries = async (req, res) => {
+    try {
+        const industrias = await getAllIndustrias(); // Llama a la función para obtener industrias
+        return res.status(200).json(industrias); // Devuelve las industrias
+    } catch (error) {
+        console.error('Error fetching industries:', error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+
+
 

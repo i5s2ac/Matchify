@@ -3,6 +3,8 @@ import WelcomePage from './pages/WelcomePage';
 import Login from './pages/login';
 import Register from './pages/register';
 import Home from './pages/home';
+import RegisterEnterprise from './pages/register_enterprise';
+import CompanyHome from './pages/CompanyHome';
 import './styles/index.css';
 
 function App() {
@@ -10,9 +12,13 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<WelcomePage />} />
-          <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
             <Route path="/home/:userId" element={<Home />} />
+            <Route path="/register_enterprise" element={<RegisterEnterprise />} />
+            <Route path="/home/:userId/:empresaId/:rolId" element={<CompanyHome />} />
+
+
         </Routes>
       </Router>
   );

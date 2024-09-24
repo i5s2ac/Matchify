@@ -112,7 +112,7 @@ const Register = () => {
                     </form>
 
                     <div className="text-center mt-8">
-                        <p className="text-lg text-gray-700">Are you registering as a company? <a href="/auth/register_enterprise" className="text-primary font-medium hover:text-secondary">Register your company here.</a></p>
+                        <p className="text-lg text-gray-700">Are you registering as a company? <a href="/register_enterprise" className="text-primary font-medium hover:text-secondary">Register your company here.</a></p>
                     </div>
                 </div>
             </div>

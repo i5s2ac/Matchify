@@ -16,18 +16,24 @@ const Login = () => {
                 email,
                 password,
             });
-            // Manejar la respuesta de éxito
-            console.log('Inicio de sesión exitoso:', response.data);
-            const { userId, token } = response.data;
 
-            // Almacena el token en localStorage o en el estado global si es necesario
+            // Obtener los datos relevantes de la respuesta
+            const { userId, empresaId, rolId, token } = response.data;
+
+            // Almacena el token en localStorage
             localStorage.setItem('token', token);
 
-            // Redirige a la página del usuario
-            navigate(`/home/${userId}`); // Redirige a la ruta dinámica
+            // Verifica si el usuario está relacionado a una empresa
+            if (empresaId && rolId) {
+                // Redirige a la página de CompanyHome si el usuario está asociado a una empresa
+                navigate(`/home/${userId}/${empresaId}/${rolId}`);
+            } else {
+                // Si no está asociado a una empresa, redirige al home normal del usuario
+                navigate(`/home/${userId}`);
+            }
 
         } catch (error) {
-            // Manejar errores, por ejemplo, mostrar un mensaje
+            // Manejo de errores
             if (error.response) {
                 setErrorMessage(error.response.data.message);
             } else {
@@ -35,6 +41,7 @@ const Login = () => {
             }
         }
     };
+
 
     return (
         <div className="min-h-screen flex">
