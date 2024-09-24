@@ -1,0 +1,78 @@
+import {
+    createJobOffer,
+    searchJobOffers,
+    getEmpresasByIds,
+    getUserById,
+    getJobOfferById,
+    updateJobOffer,
+    deleteJobOffer,
+    getJobOffersByCompany,
+} from '../repositories/jobRepository.js';
+
+// Servicio para crear una nueva oferta de empleo
+export const createJobOfferService = async (jobData) => {
+    try {
+        const newJobOffer = await createJobOffer(jobData);
+        return newJobOffer;
+    } catch (error) {
+        throw new Error(`Error al crear la oferta de empleo: ${error.message}`);
+    }
+};
+
+// Servicio para buscar ofertas de empleo con filtros
+export const searchJobOffersService = async (filters, userId) => {
+    try {
+        const ofertas = await searchJobOffers(filters);
+
+        // Si no se encuentran ofertas, devolver un array vacío
+        if (!ofertas.length) return [];
+
+        // Obtener las empresas relacionadas
+        const empresaIds = [...new Set(ofertas.map(oferta => oferta.empresaId))];
+        const empresas = await getEmpresasByIds(empresaIds);
+
+        // Obtener el usuario que hace la búsqueda
+        const usuario = await getUserById(userId);
+        if (!usuario) throw new Error('Usuario no encontrado');
+
+        // Vincular la información de empresas y usuario a cada oferta
+        const ofertasConEmpresaYUsuario = ofertas.map(oferta => ({
+            ...oferta.toJSON(),
+            empresa: empresas.find(empresa => empresa.id === oferta.empresaId),
+            usuario: usuario.username,
+        }));
+
+        return ofertasConEmpresaYUsuario;
+    } catch (error) {
+        throw new Error(`Error buscando ofertas de empleo: ${error.message}`);
+    }
+};
+
+// Servicio para actualizar una oferta de empleo
+export const updateJobOfferService = async (id, updatedData) => {
+    try {
+        const updatedJobOffer = await updateJobOffer(id, updatedData);
+        return updatedJobOffer;
+    } catch (error) {
+        throw new Error(`Error actualizando la oferta de empleo: ${error.message}`);
+    }
+};
+
+// Servicio para eliminar una oferta de empleo
+export const deleteJobOfferService = async (id) => {
+    try {
+        await deleteJobOffer(id);
+    } catch (error) {
+        throw new Error(`Error eliminando la oferta de empleo: ${error.message}`);
+    }
+};
+
+// Servicio para obtener ofertas de empleo por empresa (y opcionalmente por usuario)
+export const getJobOffersByCompanyService = async (empresaId, userId) => {
+    try {
+        const ofertas = await getJobOffersByCompany(empresaId, userId);
+        return ofertas;
+    } catch (error) {
+        throw new Error(`Error obteniendo ofertas de empleo por empresa: ${error.message}`);
+    }
+};

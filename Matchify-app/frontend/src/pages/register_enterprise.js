@@ -25,7 +25,7 @@ const RegisterCompanyPage = () => {
         const fetchIndustrias = async () => {
             setLoadingIndustrias(true);
             try {
-                const response = await axios.get('http://localhost:3001/auth/industrias');
+                const response = await axios.get('http://localhost:3001/industry');
                 setIndustrias(response.data);
                 setLoadingIndustrias(false);
             } catch (error) {

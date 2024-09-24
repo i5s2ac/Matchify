@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 
 router.post('/create', createJobOfferController);
-router.get('/job/search', searchJobOffersController);
-router.put('/job/update/:id', updateJobOfferController);
-router.delete('/job/delete/:id', deleteJobOfferController);
-router.get('/job/company', getJobOffersByCompanyController);
+router.get('/search', searchJobOffersController);
+router.put('/update/:id', updateJobOfferController);
+router.delete('/delete/:id', deleteJobOfferController);
+router.get('/company', getJobOffersByCompanyController);
 
 export default router;
