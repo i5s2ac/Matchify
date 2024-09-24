@@ -12,7 +12,7 @@ const Home = ({ selectedJob, username}) => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');  // Obtener el token almacenado
-                const response = await axios.get(`http://localhost:3001/auth/${userId}`, {
+                const response = await axios.get(`http://localhost:3001/user/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Enviar el token en los encabezados
                     },

@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import industryRoutes from './routes/industryRoutes.js';
+import companyRoutes from './routes/companyRoutes.js';
 
 import sequelize from './config/database.js'; // Importa la conexión a la base de datos
 import defineAssociations from './models/associations.js'; // Importa las asociaciones
@@ -18,7 +21,10 @@ defineAssociations();
 
 // Rutas de autenticación
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 app.use('/job', jobRoutes);
+app.use('/industry', industryRoutes);
+app.use('/company', companyRoutes);
 
 
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -16,12 +16,15 @@ const Login = () => {
                 email,
                 password,
             });
-
-            // Obtener los datos relevantes de la respuesta
-            const { userId, empresaId, rolId, token } = response.data;
+            // Manejar la respuesta de éxito
+            console.log('Inicio de sesión exitoso:', response.data);
+            const { userId, token, empresaId, rolId } = response.data;
 
             // Almacena el token en localStorage
             localStorage.setItem('token', token);
+
+            // Establece el estado de autenticación a verdadero
+            setIsAuthenticated(true);
 
             // Verifica si el usuario está relacionado a una empresa
             if (empresaId && rolId) {
@@ -41,7 +44,6 @@ const Login = () => {
             }
         }
     };
-
 
     return (
         <div className="min-h-screen flex">
