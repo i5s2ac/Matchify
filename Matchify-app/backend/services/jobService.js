@@ -68,7 +68,7 @@ export const deleteJobOfferService = async (id) => {
 };
 
 // Servicio para obtener ofertas de empleo por empresa (y opcionalmente por usuario)
-export const getJobOffersByCompanyService = async (empresaId, userId) => {
+export const getJobOffersByCompanyService = async (empresaId, userId = null) => {
     try {
         const ofertas = await getJobOffersByCompany(empresaId, userId);
         return ofertas;
@@ -76,3 +76,14 @@ export const getJobOffersByCompanyService = async (empresaId, userId) => {
         throw new Error(`Error obteniendo ofertas de empleo por empresa: ${error.message}`);
     }
 };
+
+// Servicio para obtener una oferta de empleo por ID
+export const getJobOfferByIdService = async (id) => {
+    try {
+        const oferta = await getJobOfferById(id);  // Llama a la función del repositorio
+        return oferta;
+    } catch (error) {
+        throw new Error(`Error obteniendo la oferta de empleo: ${error.message}`);
+    }
+};
+

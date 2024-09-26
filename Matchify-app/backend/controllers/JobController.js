@@ -4,6 +4,7 @@ import {
     updateJobOfferService,
     deleteJobOfferService,
     getJobOffersByCompanyService,
+    getJobOfferByIdService
 } from '../services/jobService.js';
 
 export const createJobOfferController = async (req, res) => {
@@ -59,11 +60,41 @@ export const deleteJobOfferController = async (req, res) => {
 export const getJobOffersByCompanyController = async (req, res) => {
     const { empresaId, userId } = req.query;
 
+    console.log(`empresaId: ${empresaId}, userId: ${userId}`);  // Añade este log para ver los valores
+
+    if (!empresaId) {
+        return res.status(400).json({ success: false, message: 'El campo empresaId es obligatorio.' });
+    }
+
     try {
         const ofertas = await getJobOffersByCompanyService(empresaId, userId);
+        console.log('Ofertas encontradas:', ofertas);  // Añade este log para ver las ofertas
+
+        if (!ofertas || ofertas.length === 0) {
+            return res.status(404).json({ success: false, message: 'No se encontraron ofertas de empleo para esta empresa.' });
+        }
+
         return res.status(200).json({ success: true, ofertas });
     } catch (error) {
-        console.error('Error fetching job offers:', error);
-        return res.status(500).json({ success: false, message: error.message });
+        console.error('Error al obtener ofertas de empleo:', error);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };
+
+export const getJobOfferByIdController = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const oferta = await getJobOfferByIdService(id);  // Llama al servicio en lugar del repositorio
+
+        if (!oferta) {
+            return res.status(404).json({ success: false, message: 'Oferta no encontrada.' });
+        }
+
+        return res.status(200).json({ success: true, oferta });
+    } catch (error) {
+        console.error('Error al obtener la oferta de empleo:', error.message);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+};
+

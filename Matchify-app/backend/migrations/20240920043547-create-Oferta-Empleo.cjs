@@ -89,7 +89,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      Competencias__Requerimiento: {
+      Competencias_Requerimiento: {
         type: Sequelize.STRING,
         allowNull: true,
       },

@@ -53,7 +53,7 @@ export const updateJobOffer = async (id, updatedData) => {
 export const deleteJobOffer = async (id) => {
     const oferta = await OfertaEmpleo.findByPk(id);
     if (!oferta) throw new Error('Oferta no encontrada');
-    return await oferta.destroy();
+    await oferta.destroy();  // Destruir la oferta encontrada
 };
 
 // Obtener ofertas de empleo por empresa y opcionalmente por usuario
@@ -66,3 +66,5 @@ export const getJobOffersByCompany = async (empresaId, userId) => {
         order: [['fechaPublicacion', 'DESC']],
     });
 };
+
+
