@@ -5,7 +5,8 @@ import {
     updateJobOfferController,
     deleteJobOfferController,
     getJobOffersByCompanyController,
-    getJobOfferByIdController // Agrega esto
+    getJobOfferByIdController,
+    getActiveJobOffersController
 } from '../controllers/jobController.js';
 
 
@@ -16,6 +17,8 @@ router.post('/create', createJobOfferController);
 router.get('/search', searchJobOffersController);
 router.put('/update/:id', updateJobOfferController);
 router.delete('/delete/:id', deleteJobOfferController);
-router.get('/:id', getJobOfferByIdController);  // Nueva ruta para obtener una oferta por ID
+router.get('/active', getActiveJobOffersController);
+router.get('/:id', getJobOfferByIdController);
+
 
 export default router;

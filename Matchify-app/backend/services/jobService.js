@@ -7,6 +7,7 @@ import {
     updateJobOffer,
     deleteJobOffer,
     getJobOffersByCompany,
+    getActiveJobOffers,
 } from '../repositories/jobRepository.js';
 
 // Servicio para crear una nueva oferta de empleo
@@ -86,4 +87,15 @@ export const getJobOfferByIdService = async (id) => {
         throw new Error(`Error obteniendo la oferta de empleo: ${error.message}`);
     }
 };
+
+// Servicio para obtener las ofertas de empleo activas
+export const getActiveJobOffersService = async () => {
+    try {
+        const ofertas = await getActiveJobOffers();
+        return ofertas;
+    } catch (error) {
+        throw new Error(`Error obteniendo ofertas activas: ${error.message}`);
+    }
+};
+
 

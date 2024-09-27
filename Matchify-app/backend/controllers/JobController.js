@@ -4,7 +4,8 @@ import {
     updateJobOfferService,
     deleteJobOfferService,
     getJobOffersByCompanyService,
-    getJobOfferByIdService
+    getJobOfferByIdService,
+    getActiveJobOffersService
 } from '../services/jobService.js';
 
 export const createJobOfferController = async (req, res) => {
@@ -98,3 +99,16 @@ export const getJobOfferByIdController = async (req, res) => {
     }
 };
 
+// Nuevo controlador para obtener las ofertas activas
+export const getActiveJobOffersController = async (req, res) => {
+    try {
+        const ofertas = await getActiveJobOffersService();
+        if (!ofertas || ofertas.length === 0) {
+            return res.status(404).json({ success: false, message: 'No se encontraron ofertas activas.' });
+        }
+        return res.status(200).json({ success: true, ofertas });
+    } catch (error) {
+        console.error('Error al obtener ofertas activas:', error);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+};

@@ -67,4 +67,12 @@ export const getJobOffersByCompany = async (empresaId, userId) => {
     });
 };
 
-
+// Obtener todas las ofertas activas
+export const getActiveJobOffers = async () => {
+    return await OfertaEmpleo.findAll({
+        where: {
+            estatus: 'Activo'  // Suponiendo que 'estatus' sea el campo que indica si la oferta está activa
+        },
+        order: [['fechaPublicacion', 'DESC']],
+    });
+};

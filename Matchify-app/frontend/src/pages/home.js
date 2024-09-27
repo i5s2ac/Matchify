@@ -1,11 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { BuildingOfficeIcon, DocumentIcon, LightBulbIcon, PuzzlePieceIcon, PhoneIcon, EnvelopeIcon, GlobeAltIcon, MapPinIcon, MagnifyingGlassIcon, BriefcaseIcon, CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/outline';
+import {
+    BuildingOfficeIcon,
+    DocumentIcon,
+    LightBulbIcon,
+    PuzzlePieceIcon,
+    PhoneIcon,
+    EnvelopeIcon,
+    GlobeAltIcon,
+    MapPinIcon,
+    MagnifyingGlassIcon,
+    BriefcaseIcon,
+    CalendarIcon,
+    CurrencyDollarIcon
+} from '@heroicons/react/outline';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const Home = ({ selectedJob, username}) => {
+const Home = ({ selectedJob, username }) => {
     const [error, setError] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [activeJobs, setActiveJobs] = useState([]);  // Estado para las ofertas activas
     const { userId } = useParams();
 
     useEffect(() => {
@@ -24,20 +38,28 @@ const Home = ({ selectedJob, username}) => {
             }
         };
 
+        // Función para obtener las ofertas activas de todas las empresas
+        const fetchActiveJobs = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/job/active`);  // Ajusta la ruta de la API para obtener las ofertas activas
+                const data = response.data;
+                if (data.success) {
+                    setActiveJobs(data.ofertas);
+                } else {
+                    setError('No se encontraron ofertas activas.');
+                }
+            } catch (error) {
+                console.error('Error fetching active job offers:', error);
+                setError('Error al obtener las ofertas activas.');
+            }
+        };
+
         fetchData();
+        fetchActiveJobs();
     }, [userId]);
 
     if (error) return <p>{error}</p>;
     if (!userData) return <p>Cargando...</p>;
-
-    const handleViewCVClick = () => {
-        // Lógica para ver CV
-    };
-
-    const renderApplyButton = () => {
-        // Lógica para renderizar el botón de aplicación
-    };
-
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
@@ -61,36 +83,40 @@ const Home = ({ selectedJob, username}) => {
                     </div>
                 </div>
 
+                {/* Sección para mostrar todas las ofertas activas */}
+                <div className="mt-6">
+                    <h2 className="text-2xl font-semibold mb-4 text-gray-800">Ofertas de Empleo Activas</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        {activeJobs.length > 0 ? (
+                            activeJobs.map((job) => (
+                                <div key={job.id} className="bg-white p-6 rounded-lg shadow-md">
+                                    <h3 className="text-xl font-bold text-gray-800">{job.titulo}</h3>
+                                    <p className="text-gray-600">{job.descripcion}</p>
+                                    <p className="text-gray-500">Salario: {job.salario}</p>
+                                    <p className="text-gray-500">Modalidad: {job.modalidad}</p>
+                                    <p className="text-gray-500">
+                                        Publicado el: {new Date(job.fechaPublicacion).toLocaleDateString()}
+                                    </p>
+                                    <p className="text-gray-500">Empresa: {job.empresa?.nombre}</p>
+                                    <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg">
+                                        Aplicar
+                                    </button>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">No hay ofertas activas disponibles.</p>
+                        )}
+                    </div>
+                </div>
+
                 <div className="mt-6 h-[330px] overflow-y-auto pr-4">
                     <h3 className="text-xl md:text-2xl font-semibold mb-4 text-gray-800">Descripción del trabajo</h3>
                     <p className="mt-6 text-gray-700 leading-relaxed text-md text-justify">
                         {selectedJob?.descripcion || "Descripción no disponible"}
                     </p>
 
-                    <h3 className="text-xl md:text-2xl font-semibold mt-6 text-gray-800">Funciones Requeridas</h3>
-                    <p className="mt-3 text-gray-700 leading-relaxed text-md text-justify">
-                        {selectedJob?.Funciones_Requerimiento || "Funciones no disponibles"}
-                    </p>
-
-                    <h3 className="text-xl md:text-2xl font-semibold mt-6 text-gray-800">Estudios Requeridos</h3>
-                    <p className="mt-3 text-gray-700 leading-relaxed text-md text-justify">
-                        {selectedJob?.Estudios_Requerimiento || "Estudios no disponibles"}
-                    </p>
-
-                    <h3 className="text-xl md:text-2xl font-semibold mt-6 text-gray-800">Experiencia Requerida</h3>
-                    <p className="mt-3 text-gray-700 leading-relaxed text-md text-justify">
-                        {selectedJob?.Experiencia_Requerimiento || "Experiencia no disponible"}
-                    </p>
-
-                    <h3 className="text-xl md:text-2xl font-semibold mt-6 text-gray-800">Conocimientos Requeridos</h3>
-                    <p className="mt-3 text-gray-700 leading-relaxed text-md text-justify">
-                        {selectedJob?.Conocimientos_Requerimiento || "Conocimientos no disponibles"}
-                    </p>
-
-                    <h3 className="text-xl md:text-2xl font-semibold mt-6 text-gray-800">Competencias Requeridas</h3>
-                    <p className="mt-3 text-gray-700 leading-relaxed text-md text-justify">
-                        {selectedJob?.Competencias__Requerimiento || "Competencias no disponibles"}
-                    </p>
+                    {/* Más detalles de la oferta seleccionada */}
+                    {/* Añade aquí más secciones como "Funciones", "Estudios Requeridos", etc. */}
                 </div>
 
                 {selectedJob?.empresa ? (
