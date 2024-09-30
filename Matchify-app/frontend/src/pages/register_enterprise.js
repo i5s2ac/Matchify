@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const RegisterCompanyPage = () => {
     const [step, setStep] = useState(1);
-    const [industrias, setIndustrias] = useState([]);
+    const [industrias, setIndustrias] = useState([]); // Inicia con un array vacío
     const [loadingIndustrias, setLoadingIndustrias] = useState(false);
     const [errorIndustrias, setErrorIndustrias] = useState('');
     const [selectedIndustria, setSelectedIndustria] = useState('');
@@ -26,15 +26,20 @@ const RegisterCompanyPage = () => {
             setLoadingIndustrias(true);
             try {
                 const response = await axios.get('http://localhost:3001/industry');
-                setIndustrias(response.data);
-                setLoadingIndustrias(false);
+                if (response.data.success && Array.isArray(response.data.industrias)) {
+                    setIndustrias(response.data.industrias);  // Acceder al array de industrias
+                } else {
+                    setIndustrias([]);  // En caso de que no haya industrias
+                }
             } catch (error) {
                 setErrorIndustrias('Failed to fetch industries');
+            } finally {
                 setLoadingIndustrias(false);
             }
         };
         fetchIndustrias();
     }, []);
+
 
     const handleNextStep = () => {
         if (!companyName || !direccion || !telefono || !email || !sitioWeb || !selectedIndustria) {
@@ -52,7 +57,7 @@ const RegisterCompanyPage = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/auth/register_company', {
+            const response = await axios.post('http://localhost:3001/company/register_company', {
                 username,
                 email,
                 password,
@@ -78,7 +83,6 @@ const RegisterCompanyPage = () => {
         }
     };
 
-
     return (
         <div className="min-h-screen flex">
             <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-16">
@@ -99,7 +103,7 @@ const RegisterCompanyPage = () => {
                                             required
                                         >
                                             <option value="">Select Industry</option>
-                                            {industrias.map((industria) => (
+                                            {Array.isArray(industrias) && industrias.map((industria, ind) => (
                                                 <option key={industria.id} value={industria.id}>
                                                     {industria.nombre}
                                                 </option>

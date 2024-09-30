@@ -38,7 +38,7 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
         allowNull: false,
     },
     estatus: {
-        type: DataTypes.ENUM('Activo', 'Cerrado'),
+        type: DataTypes.ENUM('Activo', 'Inactivo'),
         allowNull: false,
         defaultValue: 'Activo',
     },

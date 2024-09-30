@@ -49,15 +49,27 @@ export const searchJobOffersService = async (filters, userId) => {
     }
 };
 
-// Servicio para actualizar una oferta de empleo
 export const updateJobOfferService = async (id, updatedData) => {
     try {
-        const updatedJobOffer = await updateJobOffer(id, updatedData);
-        return updatedJobOffer;
+        // Si el campo 'estatus' está presente en los datos de actualización, se valida
+        if (updatedData.estatus && !['Activo', 'Inactivo'].includes(updatedData.estatus)) {
+            throw new Error('Valor de estatus inválido. Solo se permiten "Activo" o "Inactivo".');
+        }
+
+        // Intentar actualizar la oferta de trabajo
+        const result = await updateJobOffer(id, updatedData);
+
+        // Si no se actualiza ninguna fila, lanzar un error
+        if (result[0] === 0) {
+            throw new Error('Oferta de empleo no encontrada o no se pudo actualizar.');
+        }
+
+        return result;
     } catch (error) {
         throw new Error(`Error actualizando la oferta de empleo: ${error.message}`);
     }
 };
+
 
 // Servicio para eliminar una oferta de empleo
 export const deleteJobOfferService = async (id) => {

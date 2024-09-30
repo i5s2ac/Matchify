@@ -112,3 +112,30 @@ export const getActiveJobOffersController = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };
+
+export const toggleJobOfferStatusController = async (req, res) => {
+    const { id } = req.params;
+    const { estatus } = req.body;
+
+    // Validar que el estatus sea uno de los valores permitidos
+    const validStatuses = ['Activo', 'Inactivo'];
+    if (!validStatuses.includes(estatus)) {
+        return res.status(400).json({ success: false, message: 'El valor de estatus no es válido.' });
+    }
+
+    try {
+        // Intentar actualizar el estatus de la oferta de empleo
+        const updatedJobOffer = await updateJobOfferService(id, { estatus });
+
+        if (!updatedJobOffer) {
+            return res.status(404).json({ success: false, message: 'Oferta no encontrada.' });
+        }
+
+        return res.status(200).json({ success: true, oferta: updatedJobOffer });
+    } catch (error) {
+        // Manejar los errores internos del servidor
+        console.error('Error al cambiar el estado de la oferta de empleo:', error);
+        return res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
+    }
+};
+
