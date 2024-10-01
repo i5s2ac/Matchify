@@ -22,3 +22,8 @@ export const getOrCreateAdminRole = async () => {
 export const findEmpresaUsuarioByUserId = async (id) => {
     return await EmpresaUsuario.findOne({ where: { usuarioId: id } });
 };
+
+// Función para buscar una empresa por ID
+export const findCompanyById = async (empresaId) => {
+    return await Empresa.findByPk(empresaId);
+};

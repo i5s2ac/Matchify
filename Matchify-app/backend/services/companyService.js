@@ -1,6 +1,6 @@
 // services/companyService.js
 import bcrypt from 'bcryptjs'; // Asegúrate de importar bcryptjs o bcrypt
-import { createEmpresa, createEmpresaUsuario, getOrCreateAdminRole } from '../repositories/companyRepository.js';
+import { createEmpresa, createEmpresaUsuario, getOrCreateAdminRole, findCompanyById } from '../repositories/companyRepository.js';
 import { findUserByEmail, createUser } from '../repositories/userRepository.js';
 
 export const registerCompanyWithUser = async (companyData, userData) => {
@@ -24,4 +24,9 @@ export const registerCompanyWithUser = async (companyData, userData) => {
     await createEmpresaUsuario({ empresaId: empresa.id, usuarioId: user.id, rolId: adminRole.id });
 
     return { empresa, user };
+};
+
+// Servicio para obtener empresa por ID
+export const getCompanyByIdService = async (empresaId) => {
+    return await findCompanyById(empresaId);
 };
