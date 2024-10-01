@@ -5,7 +5,8 @@ import {
     deleteJobOfferService,
     getJobOffersByCompanyService,
     getJobOfferByIdService,
-    getActiveJobOffersService
+    getActiveJobOffersService,
+    getJobSummaryService
 } from '../services/jobService.js';
 
 export const createJobOfferController = async (req, res) => {
@@ -136,6 +137,26 @@ export const toggleJobOfferStatusController = async (req, res) => {
         // Manejar los errores internos del servidor
         console.error('Error al cambiar el estado de la oferta de empleo:', error);
         return res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
+    }
+};export const getJobSummaryController = async (req, res) => {
+    const { empresaId } = req.query;
+
+    if (!empresaId) {
+        return res.status(400).json({ success: false, message: 'El campo empresaId es obligatorio.' });
+    }
+
+    try {
+        const { activeJobCount, inactiveJobCount, activeJobs, inactiveJobs } = await getJobSummaryService(empresaId);
+        return res.status(200).json({
+            success: true,
+            activeJobCount,
+            inactiveJobCount,
+            activeJobs,
+            inactiveJobs,
+        });
+    } catch (error) {
+        console.error('Error al obtener el resumen de trabajos:', error);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 };
 

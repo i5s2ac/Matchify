@@ -8,6 +8,8 @@ import {
     deleteJobOffer,
     getJobOffersByCompany,
     getActiveJobOffers,
+    getJobCountByStatus,
+    getJobOffersByStatus
 } from '../repositories/jobRepository.js';
 
 // Servicio para crear una nueva oferta de empleo
@@ -110,4 +112,16 @@ export const getActiveJobOffersService = async () => {
     }
 };
 
+export const getJobSummaryService = async (empresaId) => {
+    try {
+        const activeJobCount = await getJobCountByStatus(empresaId, 'Activo');
+        const inactiveJobCount = await getJobCountByStatus(empresaId, 'Inactivo');
+        const activeJobs = await getJobOffersByStatus(empresaId, 'Activo');
+        const inactiveJobs = await getJobOffersByStatus(empresaId, 'Inactivo');
+
+        return { activeJobCount, inactiveJobCount, activeJobs, inactiveJobs };
+    } catch (error) {
+        throw new Error(`Error al obtener el resumen de trabajos: ${error.message}`);
+    }
+};
 

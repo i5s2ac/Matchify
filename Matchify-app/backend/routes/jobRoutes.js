@@ -7,7 +7,8 @@ import {
     getJobOffersByCompanyController,
     getJobOfferByIdController,
     getActiveJobOffersController,
-    toggleJobOfferStatusController
+    toggleJobOfferStatusController,
+    getJobSummaryController
 } from '../controllers/jobController.js';
 
 const router = express.Router();
@@ -20,6 +21,6 @@ router.put('/toggle-status/:id', toggleJobOfferStatusController);
 router.delete('/delete/:id', deleteJobOfferController);
 router.get('/active', getActiveJobOffersController);
 router.get('/:id', getJobOfferByIdController);
-
+router.get('/summary/:empresaId', getJobSummaryController);
 
 export default router;

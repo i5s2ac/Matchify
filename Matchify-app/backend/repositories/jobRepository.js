@@ -76,3 +76,23 @@ export const getActiveJobOffers = async () => {
         order: [['fechaPublicacion', 'DESC']],
     });
 };
+
+export const getJobCountByStatus = async (empresaId, status) => {
+    return await OfertaEmpleo.count({
+        where: {
+            empresaId,
+            estatus: status
+        }
+    });
+};
+
+export const getJobOffersByStatus = async (empresaId, status) => {
+    return await OfertaEmpleo.findAll({
+        where: {
+            empresaId,
+            estatus: status
+        },
+        attributes: ['id', 'titulo', 'fechaPublicacion'],  // Seleccionamos solo los campos necesarios
+        order: [['fechaPublicacion', 'DESC']],
+    });
+};
