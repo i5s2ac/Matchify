@@ -223,11 +223,11 @@ const Home = ({ username }) => {
                             <img
                                 src="/images/Profile.jpg"
                                 alt="Profile"
-                                className="h-20 w-20 rounded-full border-2 border-gray-200 object-cover"
+                                className="h-14 w-14 rounded-full border-2 border-gray-200 object-cover"
                             />
                             <div>
-                                <h1 className="text-3xl font-semibold text-gray-900">¡Hola, {username}!</h1>
-                                <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu
+                                <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {username}!</h1>
+                                <p className="text-md text-gray-500 ">Estamos listos para ayudarte a encontrar tu
                                     próximo reto</p>
                             </div>
                         </div>
@@ -255,14 +255,14 @@ const Home = ({ username }) => {
                         <div className="mt-6 flex justify-between">
                             <button
                                 onClick={() => alert("Editar Perfil")}
-                                className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="bg-blue-600 w-full text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 Editar Perfil
                             </button>
 
                             <button
                                 onClick={() => alert("Cerrar Sesión")}
-                                className="bg-red-600 text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                className="bg-red-600 w-full text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                             >
                                 Cerrar Sesión
                             </button>
@@ -380,7 +380,7 @@ const Home = ({ username }) => {
                                     <div
                                         key={job.id}
                                         onClick={() => handleJobClick(job)}
-                                        className={`cursor-pointer bg-white rounded-lg shadow-md p-6 hover:shadow-lg border transition duration-200 ${
+                                        className={`bg-white cursor-pointer rounded-lg shadow-xl p-6 hover:shadow-lg border transition duration-200 ${
                                             selectedJob && selectedJob.id === job.id ? 'border-blue-500' : 'border-gray-200'
                                         }`}
                                     >
@@ -438,7 +438,7 @@ const Home = ({ username }) => {
 
                     {selectedJob && (
                         <div
-                            className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-lg border border-gray-200 p-6 relative">
+                            className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-xl border border-gray-200 p-6 relative">
                             <div className="flex items-center mb-4">
                                 <div
                                     className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
