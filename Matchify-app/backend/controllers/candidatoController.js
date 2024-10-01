@@ -2,7 +2,8 @@ import {
     getCandidatesByCompanyService,
     updateCandidateStatusService,
     applyToJobOfferService,
-    checkApplicationStatusService
+    checkApplicationStatusService,
+    getApplicationCountsByStatus
 } from '../services/candidatoService.js';
 
 // Controlador para aplicar a una oferta de empleo
@@ -54,5 +55,16 @@ export const updateCandidateStatusController = async (req, res) => {
         return res.status(200).json({ success: true, data: candidatoActualizado });
     } catch (error) {
         return res.status(500).json({ success: false, message: `Error al actualizar candidato: ${error.message}` });
+    }
+};
+
+export const getApplicationCounts = async (req, res) => {
+    const { usuarioId } = req.params;
+
+    try {
+        const counts = await getApplicationCountsByStatus(usuarioId);
+        return res.status(200).json({ success: true, counts });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error al obtener las estadísticas' });
     }
 };

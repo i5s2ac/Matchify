@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const Home = ({ username }) => {
     const [error, setError] = useState(null);
@@ -11,6 +15,7 @@ const Home = ({ username }) => {
     const [activeTab, setActiveTab] = useState('oferta'); // Pestaña activa (oferta o empresa)
     const [applicationStatus, setApplicationStatus] = useState(null); // Estado de la aplicación
     const { userId } = useParams();
+    const [stats, setStats] = useState({ aceptadas: 0, rechazadas: 0, pendientes: 0 });
 
     // Función para obtener la información del usuario
     useEffect(() => {
@@ -61,9 +66,67 @@ const Home = ({ username }) => {
             }
         };
 
+        const fetchStats = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/candidatos/${userId}/application-counts`);
+                const counts = response.data.counts;
+                const formattedStats = {
+                    aceptadas: counts.find(c => c.estado === 'aceptada')?.cantidad || 0,
+                    rechazadas: counts.find(c => c.estado === 'rechazada')?.cantidad || 0,
+                    pendientes: counts.find(c => c.estado === 'pendiente')?.cantidad || 0
+                };
+                setStats(formattedStats);
+            } catch (error) {
+                setError('Error al obtener las estadísticas');
+            }
+        };
+
+        fetchStats();
         fetchData();
         fetchActiveJobs();
     }, [userId]);
+
+    // Datos del gráfico de barras
+    const data = {
+        labels: ['Aceptadas', 'Pendientes', 'Rechazadas'],
+        datasets: [
+            {
+                label: 'Estado de Solicitudes',
+                data: [stats.aceptadas, stats.pendientes, stats.rechazadas],
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336'], // Colores para las barras
+                borderColor: ['#388E3C', '#FFA000', '#D32F2F'],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+
+    // Opciones de configuración del gráfico
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false,
+            },
+            title: {
+                display: true,
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    display: false, // Quita las líneas de la cuadrícula en el eje Y
+                },
+            },
+            x: {
+                grid: {
+                    display: false, // Quita las líneas de la cuadrícula en el eje X
+                },
+            },
+        },
+    };
+
 
     useEffect(() => {
         if (selectedJob) {
@@ -150,28 +213,167 @@ const Home = ({ username }) => {
     return (
         <div className="min-h-screen flex flex-col bg-white">
             <main className="flex-grow p-6">
-                <div className="flex justify-between items-center mb-6 p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-                    <div className="flex items-center space-x-4">
-                        <img
-                            src="/images/Profile.jpg"
-                            alt="Profile Picture"
-                            className="h-14 w-14 rounded-full border-2 border-gray-200 object-cover"
-                        />
-                        <div>
-                            <h1 className="text-2xl font-medium text-gray-900">¡Hola, {username}!</h1>
-                            <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu próximo reto</p>
+
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+
+                    <div
+                        className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
+                        <div className="flex items-center space-x-6 mb-4">
+                            <img
+                                src="/images/Profile.jpg"
+                                alt="Profile"
+                                className="h-20 w-20 rounded-full border-2 border-gray-200 object-cover"
+                            />
+                            <div>
+                                <h1 className="text-3xl font-semibold text-gray-900">¡Hola, {username}!</h1>
+                                <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu
+                                    próximo reto</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+
+
+                            {/* Barra de progreso */}
+                            <div className="mt-6">
+                                <p className="text-sm font-medium text-gray-500">Progreso de tu perfil</p>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                    <div className="bg-blue-600 h-2.5 rounded-full" style={{width: '75%'}}></div>
+                                    {/* Puedes ajustar el porcentaje */}
+                                </div>
+                            </div>
+
+                            {/* Cita motivacional */}
+                            <div className="mt-6">
+                                <blockquote className="italic text-gray-500">"El éxito no se mide por lo que logras,
+                                    sino por los obstáculos que superas."
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-between">
+                            <button
+                                onClick={() => alert("Editar Perfil")}
+                                className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                Editar Perfil
+                            </button>
+
+                            <button
+                                onClick={() => alert("Cerrar Sesión")}
+                                className="bg-red-600 text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            >
+                                Cerrar Sesión
+                            </button>
                         </div>
                     </div>
-                    <div>
-                        <button className="px-5 py-2 bg-blue-600 text-white border border-gray-300 rounded-lg hover:bg-blue-700 transition focus:outline-none">
-                            Editar Perfil
+
+
+                    {/* Gráfica de barras */}
+                    <div
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
+                        {/* Título */}
+                        <div>
+                            <div className="flex items-center space-x-4 mb-4">
+                                <div className="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center">
+                                    <span className="text-white text-xl font-bold">ES</span>
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-semibold text-gray-800">Estado de Solicitudes</h2>
+                                    <p className="text-gray-500">Revisión de candidaturas</p>
+                                </div>
+                            </div>
+
+                            {/* Gráfico de barras */}
+                            <div className="my-12">
+                                <Bar data={data} options={options}/>
+                            </div>
+                        </div>
+
+                        {/* Botón fijo */}
+                        <button
+                            onClick={() => alert("Ver más detalles")}
+                            className="bg-blue-600 text-white w-full py-3 rounded-lg mt-4 hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Ver más detalles
                         </button>
+                    </div>
+
+                    <div className="grid grid-rows-1 sm:grid-rows-2 gap-6 ">
+
+                        {/* Tarjeta de Revisar CV */}
+                        <div
+                            className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
+                            <div>
+                                <div className="flex items-center space-x-4 mb-4">
+                                    <div
+                                        className="bg-indigo-500 rounded-full h-12 w-12 flex items-center justify-center">
+                                        <span className="text-white text-xl font-bold">CV</span>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-semibold text-gray-800">Revisa tu CV</h2>
+                                        <p className="text-gray-500">Asegúrate de que tu CV esté actualizado.</p>
+                                    </div>
+                                </div>
+
+                                {/* Descripción */}
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    Una revisión rápida de tu CV podría marcar la diferencia. Asegúrate de tener tus
+                                    habilidades
+                                    y experiencia bien destacadas.
+                                </p>
+                            </div>
+
+                            {/* Botón fijo */}
+                            <button
+                                onClick={() => alert("Revisar CV")}
+                                className="bg-indigo-600 text-white w-full py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                Revisar CV
+                            </button>
+                        </div>
+
+                        {/* Tarjeta de Consejo de Trabajo */}
+                        <div
+                            className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
+                            <div>
+                                <div className="flex items-center space-x-4 mb-4">
+                                    <div
+                                        className="bg-orange-500 rounded-full h-12 w-12 flex items-center justify-center">
+                                        <span className="text-white text-xl font-bold">Tip</span>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-semibold text-gray-800">Consejo de Trabajo</h2>
+                                        <p className="text-gray-500">Aumenta tus oportunidades laborales</p>
+                                    </div>
+                                </div>
+
+                                {/* Consejo */}
+                                <p className="text-gray-600 mb-6 text-lg">
+                                    "La clave para una entrevista exitosa es investigar la empresa. Conocer sus valores
+                                    y
+                                    metas
+                                    te ayudará a conectar mejor con los reclutadores."
+                                </p>
+                            </div>
+
+                            {/* Botón fijo */}
+                            <button
+                                onClick={() => alert("Más tips")}
+                                className="bg-orange-600 text-white w-full py-3 rounded-lg hover:bg-orange-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            >
+                                Ver más consejos
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+
                 {/* Sección para mostrar todas las ofertas activas */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-lg max-h-[780px] overflow-y-auto">
+
+                    <div className="bg-white rounded-lg max-h-[730px] overflow-y-auto">
                         <div className="space-y-6">
                             {activeJobs.length > 0 ? (
                                 activeJobs.map((job) => (
@@ -184,8 +386,10 @@ const Home = ({ username }) => {
                                     >
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center">
-                                                <div className="bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
-                                                    <span className="text-lg font-bold text-white">{job.titulo.charAt(0)}</span>
+                                                <div
+                                                    className="bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
+                                                    <span
+                                                        className="text-lg font-bold text-white">{job.titulo.charAt(0)}</span>
                                                 </div>
                                                 <div className="ml-4">
                                                     <p className="text-lg font-semibold text-gray-900 truncate">
@@ -208,14 +412,17 @@ const Home = ({ username }) => {
                                             </span>
                                         </div>
                                         <div className="mt-4 flex flex-wrap items-center gap-3 text-md">
-                                            <span className="px-3 py-1 bg-green-200 text-green-700 rounded-full font-medium">
+                                            <span
+                                                className="px-3 py-1 bg-green-200 text-green-700 rounded-full font-medium">
                                                 {job.tipoTrabajo || 'Tipo no especificado'}
                                             </span>
-                                            <span className="px-3 py-1 bg-blue-200 text-blue-700 rounded-full font-medium">
+                                            <span
+                                                className="px-3 py-1 bg-blue-200 text-blue-700 rounded-full font-medium">
                                                 {job.modalidad || 'Modalidad no especificada'}
                                             </span>
                                             {job.tags?.map((tag, index) => (
-                                                <span key={index} className="px-3 py-1 bg-yellow-200 text-yellow-700 rounded-full font-medium">
+                                                <span key={index}
+                                                      className="px-3 py-1 bg-yellow-200 text-yellow-700 rounded-full font-medium">
                                                     {tag}
                                                 </span>
                                             ))}
@@ -228,13 +435,15 @@ const Home = ({ username }) => {
                         </div>
                     </div>
 
+
                     {selectedJob && (
                         <div
                             className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-lg border border-gray-200 p-6 relative">
                             <div className="flex items-center mb-4">
                                 <div
                                     className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
-                                    <span className="text-lg font-bold text-white">{selectedJob.titulo.charAt(0)}</span>
+                                        <span
+                                            className="text-lg font-bold text-white">{selectedJob.titulo.charAt(0)}</span>
                                 </div>
                                 <h2 className="ml-4 mt-4 text-3xl font-bold text-gray-800">{selectedJob.titulo}</h2>
                             </div>
@@ -319,7 +528,10 @@ const Home = ({ username }) => {
 
                         </div>
                     )}
+
                 </div>
+
+
             </main>
         </div>
     );

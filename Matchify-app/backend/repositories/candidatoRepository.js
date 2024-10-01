@@ -52,3 +52,35 @@ export const applyToJobOffer = async (usuarioId, ofertaEmpleoId) => {
         estado: 'pendiente', // Estado inicial
     });
 };
+
+export const getApplicationCountsByStatusFromDB = async (usuarioId) => {
+    try {
+        console.log(`Obteniendo conteos para usuarioId: ${usuarioId}`);
+
+        // Contar las solicitudes aceptadas
+        const countAceptadas = await CandidatoOferta.count({
+            where: { usuarioId, estado: 'aceptada' }
+        });
+
+        // Contar las solicitudes rechazadas
+        const countRechazadas = await CandidatoOferta.count({
+            where: { usuarioId, estado: 'rechazada' }
+        });
+
+        // Contar las solicitudes pendientes
+        const countPendientes = await CandidatoOferta.count({
+            where: { usuarioId, estado: 'pendiente' }
+        });
+
+        // Retornar los resultados en un formato que puedas usar fácilmente en el frontend
+        return [
+            { estado: 'aceptada', cantidad: countAceptadas },
+            { estado: 'rechazada', cantidad: countRechazadas },
+            { estado: 'pendiente', cantidad: countPendientes },
+        ];
+
+    } catch (error) {
+        console.error('Error al obtener los conteos de la base de datos:', error); // Depuración detallada
+        throw new Error('Error al obtener los conteos de las solicitudes.');
+    }
+};

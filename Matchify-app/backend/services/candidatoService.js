@@ -4,6 +4,7 @@ import {
     updateCandidatoStatus,
     applyToJobOffer,
     checkApplication,
+    getApplicationCountsByStatusFromDB
 } from '../repositories/candidatoRepository.js';
 
 // Obtener candidatos por empresa
@@ -29,4 +30,12 @@ export const applyToJobOfferService = async (usuarioId, ofertaEmpleoId) => {
 // Verificar el estado de la aplicación
 export const checkApplicationStatusService = async (usuarioId, ofertaEmpleoId) => {
     return await checkApplication(usuarioId, ofertaEmpleoId);
+};
+
+export const getApplicationCountsByStatus = async (usuarioId) => {
+    try {
+        return await getApplicationCountsByStatusFromDB(usuarioId);
+    } catch (error) {
+        throw new Error('Error al obtener las estadísticas de las solicitudes');
+    }
 };
