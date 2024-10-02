@@ -6,7 +6,8 @@ import {
     getJobOffersByCompanyService,
     getJobOfferByIdService,
     getActiveJobOffersService,
-    getJobSummaryService
+    getJobSummaryService,
+    getCandidateCountService
 } from '../services/jobService.js';
 
 export const createJobOfferController = async (req, res) => {
@@ -138,7 +139,9 @@ export const toggleJobOfferStatusController = async (req, res) => {
         console.error('Error al cambiar el estado de la oferta de empleo:', error);
         return res.status(500).json({ success: false, message: `Error interno del servidor: ${error.message}` });
     }
-};export const getJobSummaryController = async (req, res) => {
+};
+
+export const getJobSummaryController = async (req, res) => {
     const { empresaId } = req.query;
 
     if (!empresaId) {
@@ -160,3 +163,15 @@ export const toggleJobOfferStatusController = async (req, res) => {
     }
 };
 
+// Controlador para obtener el conteo de candidatos por oferta de empleo
+export const getCandidateCountController = async (req, res) => {
+    const { id } = req.params;  // Obtener el id de la oferta de empleo de los parámetros de la ruta
+
+    try {
+        const count = await getCandidateCountService(id);  // Llama a la función en el servicio
+        return res.status(200).json({ success: true, candidateCount: count });
+    } catch (error) {
+        console.error('Error al obtener el conteo de candidatos:', error);
+        return res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+};

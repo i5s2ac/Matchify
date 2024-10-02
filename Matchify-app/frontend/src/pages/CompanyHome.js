@@ -23,15 +23,30 @@ const CompanyHome = () => {
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
 
-    // Función para obtener las ofertas de empleo
     const fetchJobOffers = async () => {
         try {
             const response = await axios.get(`http://localhost:3001/job/company`, { params: { empresaId, userId } });
             const data = response.data;
+
             if (data.success) {
-                setJobOffers(data.ofertas);
-                setActiveJobCount(data.ofertas.filter(offer => offer.estatus === 'Activo').length);
-                setInactiveJobCount(data.ofertas.filter(offer => offer.estatus === 'Inactivo').length);
+                // Iterar sobre cada oferta y obtener el conteo de candidatos aplicados
+                const ofertasConConteo = await Promise.all(
+                    data.ofertas.map(async (offer) => {
+                        try {
+                            const countResponse = await axios.get(`http://localhost:3001/job/${offer.id}/candidate-count`);
+                            const candidateCount = countResponse.data.candidateCount || 0; // Evitar valores nulos o indefinidos
+                            return { ...offer, candidateCount };
+                        } catch (error) {
+                            console.error(`Error al obtener el conteo de candidatos para la oferta ${offer.id}:`, error);
+                            return { ...offer, candidateCount: 0 }; // Si falla, asignamos 0 candidatos
+                        }
+                    })
+                );
+
+                // Actualizar el estado con las ofertas y el conteo de candidatos
+                setJobOffers(ofertasConConteo);
+                setActiveJobCount(ofertasConConteo.filter(offer => offer.estatus === 'Activo').length);
+                setInactiveJobCount(ofertasConConteo.filter(offer => offer.estatus === 'Inactivo').length);
             } else {
                 setError('No se encontraron ofertas de empleo.');
             }
@@ -42,6 +57,10 @@ const CompanyHome = () => {
             setLoading(false);
         }
     };
+
+
+
+
 
     // Función para obtener candidatos pendientes e historial
     const fetchCandidates = async () => {
@@ -302,13 +321,18 @@ const CompanyHome = () => {
                             </div>
 
                             <div className="overflow-y-auto max-h-40">
-                                {jobOffers.filter(offer => offer.estatus === 'Activo').map((job) => (
-                                    <div key={job.id} className="mb-3">
-                                        <p className="text-gray-800 font-medium">{job.titulo}</p>
-                                        <p className="text-gray-500 text-sm">Publicado
-                                            hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
-                                    </div>
-                                ))}
+                                {activeJobCount === 0 ? (
+                                    <p className="text-gray-600">Actualmente no cuentas con plazas activas.</p>
+                                ) : (
+                                    jobOffers
+                                        .filter(offer => offer.estatus === 'Activo')
+                                        .map((job) => (
+                                            <div key={job.id} className="mb-3">
+                                                <p className="text-gray-800 font-medium">{job.titulo}</p>
+                                                <p className="text-gray-500 text-sm">Publicado hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
+                                            </div>
+                                        ))
+                                )}
                             </div>
                         </div>
                         <div className="mt-4">
@@ -336,13 +360,18 @@ const CompanyHome = () => {
                             </div>
 
                             <div className="overflow-y-auto max-h-40">
-                                {jobOffers.filter(offer => offer.estatus === 'Inactivo').map((job) => (
-                                    <div key={job.id} className="mb-3">
-                                        <p className="text-gray-800 font-medium">{job.titulo}</p>
-                                        <p className="text-gray-500 text-sm">Publicado
-                                            hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
-                                    </div>
-                                ))}
+                                {inactiveJobCount === 0 ? (
+                                    <p className="text-gray-600">Actualmente no cuentas con plazas inactivas o vencidas.</p>
+                                ) : (
+                                    jobOffers
+                                        .filter(offer => offer.estatus === 'Inactivo')
+                                        .map((job) => (
+                                            <div key={job.id} className="mb-3">
+                                                <p className="text-gray-800 font-medium">{job.titulo}</p>
+                                                <p className="text-gray-500 text-sm">Publicado hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
+                                            </div>
+                                        ))
+                                )}
                             </div>
                         </div>
                         <div className="mt-4">
@@ -354,6 +383,7 @@ const CompanyHome = () => {
                             </button>
                         </div>
                     </div>
+
                 </div>
 
 
@@ -464,210 +494,228 @@ const CompanyHome = () => {
 
 
                 <div className="flex flex-wrap md:flex-nowrap w-full">
-                        <div className="w-full md:w-1/3 pr-4">
-                            <div>
-                                {loading ? (
-                                    <p className="text-gray-600">Cargando ofertas de empleo...</p>
-                                ) : error ? (
-                                    <p className="text-red-500">{error}</p>
-                                ) : (
-                                    <div>
-                                        <h2 className="text-2xl font-semibold text-gray-800 mt-3 mb-3">Ofertas de Empleo</h2>
-                                        <p className="text-md text-gray-500 mb-7">Administra las ofertas de empleo creadas por ti.</p>
-                                        {filteredJobOffers.length === 0 ? (
-                                            <p className="text-gray-600 border border-gray-200 p-3 mt-4 rounded-md">
-                                                No se encontraron ofertas de trabajo con los filtros seleccionados.
-                                            </p>
-                                        ) : (
-                                            <ul className="space-y-6 max-h-[650px] overflow-y-auto pr-4">
-                                                {filteredJobOffers.map((offer) => (
-                                                    <li key={offer.id} className="bg-white p-6 rounded-lg shadow-md">
-                                                        <div className="flex items-center justify-between mb-4">
-                                                            <div className="flex items-center">
-                                                                <div
-                                                                    className="bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
-                                                                <span
-                                                                    className="text-lg font-bold text-white">{offer.titulo.charAt(0)}</span>
-                                                                </div>
-                                                                <div className="ml-4">
-                                                                    <h3 className="text-lg font-semibold text-gray-900 truncate">
-                                                                        {offer.titulo.length > 20 ? `${offer.titulo.substring(0, 20)}...` : offer.titulo}
-                                                                    </h3>
-                                                                </div>
+
+                    <div className="w-full md:w-1/3 pr-4">
+                        <div>
+                            {loading ? (
+                                <p className="text-gray-600">Cargando ofertas de empleo...</p>
+                            ) : error ? (
+                                <p className="text-red-500">{error}</p>
+                            ) : (
+                                <div>
+                                    <h2 className="text-2xl font-semibold text-gray-800 mt-3 mb-3">Ofertas de
+                                        Empleo</h2>
+                                    <p className="text-md text-gray-500 mb-7">Administra las ofertas de empleo creadas
+                                        por ti.</p>
+                                    {filteredJobOffers.length === 0 ? (
+                                        <p className="text-gray-600 border border-gray-200 p-3 mt-4 rounded-md">
+                                            No se encontraron ofertas de trabajo con los filtros seleccionados.
+                                        </p>
+                                    ) : (
+                                        <ul className="space-y-6 max-h-[650px] overflow-y-auto pr-4">
+                                            {filteredJobOffers.map((offer) => (
+                                                <li key={offer.id} className="bg-white p-6 rounded-lg shadow-md">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <div className="flex items-center">
+                                                            <div
+                                                                className="bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
+                                            <span className="text-lg font-bold text-white">
+                                                {offer.titulo.charAt(0)}
+                                            </span>
                                                             </div>
-                                                            <div className="flex space-x-2">
-                                                                <Link
-                                                                    to={`/home/${userId}/${empresaId}/${rolId}/edit_offer/${offer.id}`}
-                                                                    className="text-blue-600 hover:text-blue-800 transition">
-                                                                    <PencilIcon className="h-5 w-5"/>
-                                                                </Link>
-                                                                <button onClick={() => handleDelete(offer.id)}
-                                                                        className="text-red-600 hover:text-red-800 transition">
-                                                                    <TrashIcon className="h-5 w-5"/>
-                                                                </button>
+                                                            <div className="ml-4">
+                                                                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                                                    {offer.titulo.length > 20 ? `${offer.titulo.substring(0, 20)}...` : offer.titulo}
+                                                                </h3>
+                                                                <p className="text-gray-500 text-sm">
+                                                                    {offer.candidateCount} {offer.candidateCount === 1 ? 'candidato ha aplicado' : 'candidatos han aplicado'}
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <p className="text-gray-600 mb-4 text-md">{offer.descripcion.length > 100 ? `${offer.descripcion.substring(0, 100)}...` : offer.descripcion}</p>
-                                                        <p className="text-gray-500 mb-4 text-md">Modalidad: {offer.modalidad}</p>
-                                                        <p className="text-gray-500 mb-4 text-md">Tipo de
-                                                            empleo: {offer.tipoTrabajo}</p>
-                                                        <div
-                                                            className="text-md font-bold text-gray-600 mb-4">{`Q${parseFloat(offer.salario).toLocaleString()}`}</div>
-                                                        <div className="mt-6 flex flex-wrap gap-2">
-                                                            {offer.tags && (Array.isArray(offer.tags) ? offer.tags : offer.tags.split(',')).map((tag, index) => (
-                                                                <span key={index}
-                                                                      className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded">{tag.trim()}</span>
-                                                            ))}
-                                                        </div>
-                                                        <div
-                                                            className="flex space-x-2 mt-6 border-t border-gray-200 pt-4">
-                                                            <button
-                                                                onClick={() => handleRevisarCandidatos(offer.id)}
-                                                                className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                                                                {selectedOfferId === offer.id ? 'Mostrar Todos' : 'Revisar Candidatos'}
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleToggleStatus(offer.id, offer.estatus)}
-                                                                className={`px-4 py-3 rounded-lg transition-colors duration-300 focus:outline-none focus:ring-2 ${offer.estatus === 'Activo' ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-green-600 text-white hover:bg-green-700'}`}>
-                                                                {offer.estatus === 'Activo' ? 'Desactivar Trabajo' : 'Activar Trabajo'}
+                                                        <div className="flex space-x-2">
+                                                            <Link
+                                                                to={`/home/${userId}/${empresaId}/${rolId}/edit_offer/${offer.id}`}
+                                                                className="text-blue-600 hover:text-blue-800 transition"
+                                                            >
+                                                                <PencilIcon className="h-5 w-5"/>
+                                                            </Link>
+                                                            <button onClick={() => handleDelete(offer.id)}
+                                                                    className="text-red-600 hover:text-red-800 transition">
+                                                                <TrashIcon className="h-5 w-5"/>
                                                             </button>
                                                         </div>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                                                    </div>
+                                                    <p className="text-gray-600 mb-4 text-md">
+                                                        {offer.descripcion.length > 100 ? `${offer.descripcion.substring(0, 100)}...` : offer.descripcion}
+                                                    </p>
+                                                    <p className="text-gray-500 mb-4 text-md">Modalidad: {offer.modalidad}</p>
+                                                    <p className="text-gray-500 mb-4 text-md">Tipo de
+                                                        empleo: {offer.tipoTrabajo}</p>
+                                                    <div className="text-md font-bold text-gray-600 mb-4">
+                                                        {`Q${parseFloat(offer.salario).toLocaleString()}`}
+                                                    </div>
+                                                    <div className="mt-6 flex flex-wrap gap-2">
+                                                        {offer.tags && (Array.isArray(offer.tags) ? offer.tags : offer.tags.split(',')).map((tag, index) => (
+                                                            <span key={index}
+                                                                  className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded">
+                                            {tag.trim()}
+                                        </span>
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex space-x-2 mt-6 border-t border-gray-200 pt-4">
+                                                        <button
+                                                            onClick={() => handleRevisarCandidatos(offer.id)}
+                                                            className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                                                        >
+                                                            {selectedOfferId === offer.id ? 'Mostrar Todos' : 'Revisar Candidatos'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleToggleStatus(offer.id, offer.estatus)}
+                                                            className={`px-4 py-3 rounded-lg transition-colors duration-300 focus:outline-none focus:ring-2 ${
+                                                                offer.estatus === 'Activo' ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-green-600 text-white hover:bg-green-700'
+                                                            }`}
+                                                        >
+                                                            {offer.estatus === 'Activo' ? 'Desactivar Trabajo' : 'Activar Trabajo'}
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
                         </div>
-
-                        <div className="w-full md:w-2/3 pl-4 mt-6 md:mt-0">
-                            <h2 className="text-2xl font-semibold text-gray-800 mt-3">Candidatos</h2>
-                            <p className="text-md text-gray-500 mt-3">Administra los candidatos para tus ofertas.</p>
-                            <div className="bg-white p-6 rounded-lg shadow-lg mt-6 border border-gray-200">
-
-                                {/* Barra de búsqueda */}
-                                <div className="mb-6 relative">
-                                    <MagnifyingGlassIcon
-                                        className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar candidatos, puestos, salarios..."
-                                        value={searchTerm}
-                                        onChange={handleSearchChange}
-                                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
-                                    />
-                                </div>
+                    </div>
 
 
-                                <div className="flex space-x-4 mb-6 border-b-2 border-gray-200">
-                                    <button
-                                        onClick={() => setActiveTab('pending')}
-                                        className={`py-2 px-4 rounded-t-lg border-b-2 focus:outline-none ${
-                                            activeTab === 'pending' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-400'
-                                        }`}
-                                    >
-                                        Candidatos Pendientes
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('history')}
-                                        className={`py-2 px-4 rounded-t-lg focus:outline-none ${
-                                            activeTab === 'history' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-400'
-                                        }`}
-                                    >
-                                        Historial de Candidatos
-                                    </button>
-                                </div>
+                    <div className="w-full md:w-2/3 pl-4 mt-6 md:mt-0">
+                        <h2 className="text-2xl font-semibold text-gray-800 mt-3">Candidatos</h2>
+                        <p className="text-md text-gray-500 mt-3">Administra los candidatos para tus ofertas.</p>
+                        <div className="bg-white p-6 rounded-lg shadow-lg mt-6 border border-gray-200">
 
-                                {loading ? (
-                                    <p>Cargando...</p>
-                                ) : (
-                                    <div className="overflow-x-auto">
-                                        {activeTab === 'pending' && filteredPending.length > 0 ? (
-                                            <table className="min-w-full bg-white border">
-                                                <thead>
-                                                <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
-                                                    <th className="py-3 px-6 text-left">Nombre del Puesto</th>
-                                                    <th className="py-3 px-6 text-left">Salario</th>
-                                                    <th className="py-3 px-6 text-left">Foto</th>
-                                                    <th className="py-3 px-6 text-left">Candidato</th>
-                                                    <th className="py-3 px-6 text-left">Tags</th>
-                                                    <th className="py-3 px-6 text-left">Acciones</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody className="text-gray-600">
-                                                {filteredPending.map((candidato) => (
-                                                    <tr key={candidato.id} className="border-b hover:bg-gray-50">
-                                                        <td className="py-3 px-6">{candidato.ofertaEmpleo.titulo}</td>
-                                                        <td className="py-3 px-6">Q{parseFloat(candidato.ofertaEmpleo.salario).toLocaleString()}</td>
-                                                        <td className="py-3 px-6">
-                                                            <img
-                                                                src={candidato.candidato.foto || '/images/Profile.jpg'}
-                                                                alt={candidato.candidato.username}
-                                                                className="h-10 w-10 rounded-full object-cover"
-                                                            />
-                                                        </td>
-                                                        <td className="py-3 px-6">{candidato.candidato.username}</td>
-                                                        <td className="py-3 px-6">
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {candidato.ofertaEmpleo.tags.map((tag, index) => (
-                                                                    <span
-                                                                        key={index}
-                                                                        className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded"
-                                                                    >
+                            {/* Barra de búsqueda */}
+                            <div className="mb-6 relative">
+                                <MagnifyingGlassIcon
+                                    className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar candidatos, puestos, salarios..."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                                />
+                            </div>
+
+
+                            <div className="flex space-x-4 mb-6 border-b-2 border-gray-200">
+                                <button
+                                    onClick={() => setActiveTab('pending')}
+                                    className={`py-2 px-4 rounded-t-lg border-b-2 focus:outline-none ${
+                                        activeTab === 'pending' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Candidatos Pendientes
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('history')}
+                                    className={`py-2 px-4 rounded-t-lg focus:outline-none ${
+                                        activeTab === 'history' ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-400'
+                                    }`}
+                                >
+                                    Historial de Candidatos
+                                </button>
+                            </div>
+
+                            {loading ? (
+                                <p>Cargando...</p>
+                            ) : (
+                                <div className="space-y-6 max-h-[650px] overflow-y-auto pr-4">
+
+                                    {activeTab === 'pending' && filteredPending.length > 0 ? (
+                                        <table className="min-w-full bg-white border">
+                                            <thead>
+                                            <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
+                                                <th className="py-3 px-6 text-left">Nombre del Puesto</th>
+                                                <th className="py-3 px-6 text-left">Salario</th>
+                                                <th className="py-3 px-6 text-left">Foto</th>
+                                                <th className="py-3 px-6 text-left">Candidato</th>
+                                                <th className="py-3 px-6 text-left">Tags</th>
+                                                <th className="py-3 px-6 text-left">Acciones</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody className="text-gray-600">
+                                            {filteredPending.map((candidato) => (
+                                                <tr key={candidato.id} className="border-b hover:bg-gray-50">
+                                                    <td className="py-3 px-6">{candidato.ofertaEmpleo.titulo}</td>
+                                                    <td className="py-3 px-6">Q{parseFloat(candidato.ofertaEmpleo.salario).toLocaleString()}</td>
+                                                    <td className="py-3 px-6">
+                                                        <img
+                                                            src={candidato.candidato.foto || '/images/Profile.jpg'}
+                                                            alt={candidato.candidato.username}
+                                                            className="h-10 w-10 rounded-full object-cover"
+                                                        />
+                                                    </td>
+                                                    <td className="py-3 px-6">{candidato.candidato.username}</td>
+                                                    <td className="py-3 px-6">
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {candidato.ofertaEmpleo.tags.map((tag, index) => (
+                                                                <span
+                                                                    key={index}
+                                                                    className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded"
+                                                                >
                                                 {tag}
                                             </span>
-                                                                ))}
-                                                            </div>
-                                                        </td>
-                                                        <td className="py-3 px-6 flex space-x-2">
-                                                            <button
-                                                                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                                                                onClick={() => handleUpdateCandidato(candidato.id, 'aceptada')}
-                                                            >
-                                                                Aceptar
-                                                            </button>
-                                                            <button
-                                                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                                                                onClick={() => handleUpdateCandidato(candidato.id, 'rechazada')}
-                                                            >
-                                                                Rechazar
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                                </tbody>
-                                            </table>
-                                        ) : activeTab === 'pending' ? (
-                                            <p>No hay candidatos pendientes.</p>
-                                        ) : null}
-
-                                        {activeTab === 'history' && filteredHistory.length > 0 ? (
-                                            <table className="min-w-full bg-white border">
-                                                <thead>
-                                                <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
-                                                    <th className="py-3 px-6 text-left">Nombre del Puesto</th>
-                                                    <th className="py-3 px-6 text-left">Salario</th>
-                                                    <th className="py-3 px-6 text-left">Foto</th>
-                                                    <th className="py-3 px-6 text-left">Candidato</th>
-                                                    <th className="py-3 px-6 text-left">Estado</th>
+                                                            ))}
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-3 px-6 flex space-x-2">
+                                                        <button
+                                                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                                                            onClick={() => handleUpdateCandidato(candidato.id, 'aceptada')}
+                                                        >
+                                                            Aceptar
+                                                        </button>
+                                                        <button
+                                                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                                                            onClick={() => handleUpdateCandidato(candidato.id, 'rechazada')}
+                                                        >
+                                                            Rechazar
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                                </thead>
-                                                <tbody className="text-gray-600">
-                                                {filteredHistory.map((candidato) => (
-                                                    <tr key={candidato.id} className="border-b hover:bg-gray-50">
-                                                        <td className="py-3 px-6">{candidato.ofertaEmpleo.titulo}</td>
-                                                        <td className="py-3 px-6">Q{parseFloat(candidato.ofertaEmpleo.salario).toLocaleString()}</td>
-                                                        <td className="py-3 px-6">
-                                                            <img
-                                                                src={candidato.candidato.foto || '/images/Profile.jpg'}
-                                                                alt={candidato.candidato.username}
-                                                                className="h-10 w-10 rounded-full object-cover"
-                                                            />
-                                                        </td>
-                                                        <td className="py-3 px-6">{candidato.candidato.username}</td>
-                                                        <td className="py-3 px-6">
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    ) : activeTab === 'pending' ? (
+                                        <p>No hay candidatos pendientes.</p>
+                                    ) : null}
+
+                                    {activeTab === 'history' && filteredHistory.length > 0 ? (
+                                        <table className="min-w-full bg-white border">
+                                            <thead>
+                                            <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
+                                                <th className="py-3 px-6 text-left">Nombre del Puesto</th>
+                                                <th className="py-3 px-6 text-left">Salario</th>
+                                                <th className="py-3 px-6 text-left">Foto</th>
+                                                <th className="py-3 px-6 text-left">Candidato</th>
+                                                <th className="py-3 px-6 text-left">Estado</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody className="text-gray-600">
+                                            {filteredHistory.map((candidato) => (
+                                                <tr key={candidato.id} className="border-b hover:bg-gray-50">
+                                                    <td className="py-3 px-6">{candidato.ofertaEmpleo.titulo}</td>
+                                                    <td className="py-3 px-6">Q{parseFloat(candidato.ofertaEmpleo.salario).toLocaleString()}</td>
+                                                    <td className="py-3 px-6">
+                                                        <img
+                                                            src={candidato.candidato.foto || '/images/Profile.jpg'}
+                                                            alt={candidato.candidato.username}
+                                                            className="h-10 w-10 rounded-full object-cover"
+                                                        />
+                                                    </td>
+                                                    <td className="py-3 px-6">{candidato.candidato.username}</td>
+                                                    <td className="py-3 px-6">
                                     <span
                                         className={`px-3 py-2 rounded-full text-sm ${
                                             candidato.estado === 'aceptada'
@@ -677,23 +725,23 @@ const CompanyHome = () => {
                                     >
                                         {candidato.estado === 'aceptada' ? 'Aceptado' : 'Rechazado'}
                                     </span>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                                </tbody>
-                                            </table>
-                                        ) : activeTab === 'history' ? (
-                                            <p>No hay historial de candidatos.</p>
-                                        ) : null}
-                                    </div>
-                                )}
-                            </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    ) : activeTab === 'history' ? (
+                                        <p>No hay historial de candidatos.</p>
+                                    ) : null}
+                                </div>
+                            )}
                         </div>
-
                     </div>
+
+                </div>
             </main>
         </div>
-);
+    );
 };
 
 export default CompanyHome;

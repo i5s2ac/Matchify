@@ -9,7 +9,8 @@ import {
     getJobOffersByCompany,
     getActiveJobOffers,
     getJobCountByStatus,
-    getJobOffersByStatus
+    getJobOffersByStatus,
+    countCandidatesForJobOffer
 } from '../repositories/jobRepository.js';
 
 // Servicio para crear una nueva oferta de empleo
@@ -125,3 +126,7 @@ export const getJobSummaryService = async (empresaId) => {
     }
 };
 
+// Servicio para contar los candidatos de una oferta de empleo específica
+export const getCandidateCountService = async (jobOfferId) => {
+    return await countCandidatesForJobOffer(jobOfferId);
+};

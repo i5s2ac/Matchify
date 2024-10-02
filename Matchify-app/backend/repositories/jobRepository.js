@@ -1,6 +1,7 @@
 import OfertaEmpleo from '../models/OfertaEmpleo.js';
 import Empresa from '../models/Empresa.js';
 import User from '../models/User.js';
+import CandidatoOferta from '../models/CandidatoOferta.js';  // Asegúrate de importar CandidatoOferta
 import { Op } from 'sequelize';
 
 // Crear una nueva oferta de empleo
@@ -95,4 +96,19 @@ export const getJobOffersByStatus = async (empresaId, status) => {
         attributes: ['id', 'titulo', 'fechaPublicacion'],  // Seleccionamos solo los campos necesarios
         order: [['fechaPublicacion', 'DESC']],
     });
+};
+
+// Función para contar los candidatos aplicados a una oferta de empleo
+export const countCandidatesForJobOffer = async (jobOfferId) => {
+    try {
+        // Utilizar el modelo `CandidatoOferta` para contar los candidatos que aplicaron a la oferta
+        const count = await CandidatoOferta.count({
+            where: {
+                ofertaEmpleoId: jobOfferId,  // Asegúrate de que el campo `ofertaEmpleoId` es el correcto
+            },
+        });
+        return count;
+    } catch (error) {
+        throw new Error(`Error al contar los candidatos aplicados a la oferta: ${error.message}`);
+    }
 };

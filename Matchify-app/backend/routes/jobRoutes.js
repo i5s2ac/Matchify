@@ -8,7 +8,8 @@ import {
     getJobOfferByIdController,
     getActiveJobOffersController,
     toggleJobOfferStatusController,
-    getJobSummaryController
+    getJobSummaryController,
+    getCandidateCountController
 } from '../controllers/jobController.js';
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.delete('/delete/:id', deleteJobOfferController);
 router.get('/active', getActiveJobOffersController);
 router.get('/:id', getJobOfferByIdController);
 router.get('/summary/:empresaId', getJobSummaryController);
+router.get('/:id/candidate-count', getCandidateCountController);
 
 export default router;
