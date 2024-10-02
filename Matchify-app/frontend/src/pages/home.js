@@ -27,7 +27,7 @@ const Home = ({ username }) => {
                         'Authorization': `Bearer ${token}`,  // Enviar el token en los encabezados
                     },
                 });
-                setUserData(response.data);  // Asigna los datos del usuario
+                setUserData(response.data.user);
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 setError('Error al obtener los datos del usuario');
@@ -226,7 +226,7 @@ const Home = ({ username }) => {
                                 className="h-14 w-14 rounded-full border-2 border-gray-200 object-cover"
                             />
                             <div>
-                                <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {username}!</h1>
+                                <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {userData?.username}!</h1>
                                 <p className="text-md text-gray-500 ">Estamos listos para ayudarte a encontrar tu
                                     próximo reto</p>
                             </div>
@@ -252,17 +252,17 @@ const Home = ({ username }) => {
                             </div>
                         </div>
 
-                        <div className="mt-6 flex justify-between">
+                        <div className="mt-6 flex space-x-4">
                             <button
                                 onClick={() => alert("Editar Perfil")}
-                                className="bg-blue-600 w-full text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="bg-blue-600 flex-1 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 Editar Perfil
                             </button>
 
                             <button
                                 onClick={() => alert("Cerrar Sesión")}
-                                className="bg-red-600 w-full text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                className="bg-red-600 flex-1 text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                             >
                                 Cerrar Sesión
                             </button>
@@ -277,7 +277,7 @@ const Home = ({ username }) => {
                         <div>
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center">
-                                    <span className="text-white text-xl font-bold">ES</span>
+                                <span className="text-white text-xl font-bold">ES</span>
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-semibold text-gray-800">Estado de Solicitudes</h2>
