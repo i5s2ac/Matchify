@@ -4,6 +4,21 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import {
+    PencilIcon,
+    UserIcon,
+    TrashIcon,
+    PlusCircleIcon,
+    MagnifyingGlassIcon,
+    CalendarIcon,
+    CurrencyDollarIcon,
+    BriefcaseIcon,
+    MapPinIcon,
+    ClipboardDocumentListIcon,
+    AcademicCapIcon,
+    LightBulbIcon,
+    StarIcon, BuildingOfficeIcon, PhoneIcon, GlobeAltIcon, InformationCircleIcon
+} from '@heroicons/react/24/solid';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -237,46 +252,109 @@ const Home = ({ username }) => {
 
     // Renderizar detalles de la oferta seleccionada
     const renderOfferDetails = () => (
-        <>
-            <h3 className="text-lg font-semibold text-gray-700">Descripción del trabajo</h3>
-            <p className="text-gray-600 mt-4">{selectedJob.descripcion}</p>
-            <p className="text-gray-600 mt-4">Ubicación: {selectedJob.ubicacion}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-                <span className="text-gray-900 font-semibold">
-                    Salario: {selectedJob.salario ? `Q${selectedJob.salario}` : 'No especificado'}
-                </span>
-                <span className="px-3 py-1 bg-green-200 text-green-700 rounded-full font-medium">
-                    {selectedJob.tipoTrabajo || 'Tipo no especificado'}
-                </span>
-                <span className="px-3 py-1 bg-blue-200 text-blue-700 rounded-full font-medium">
-                    {selectedJob.modalidad || 'Modalidad no especificada'}
-                </span>
+        <div className="bg-white p-6 max-w-8xl mx-auto">
+            {/* Secciones de detalles */}
+            <div className="space-y-6">
+                {/* Descripción */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Descripción del Trabajo
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.descripcion || 'No especificada'}</p>
+                </div>
+
+                {/* Funciones esperadas */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Funciones Esperadas
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.Funciones_Requerimiento || 'No especificadas'}</p>
+                </div>
+
+                {/* Estudios esperados */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <AcademicCapIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Estudios Requeridos
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.Estudios_Requerimiento || 'No especificados'}</p>
+                </div>
+
+                {/* Conocimientos esperados */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <LightBulbIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Conocimientos Requeridos
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.Conocimientos_Requerimiento || 'No especificados'}</p>
+                </div>
+
+                {/* Competencias esperadas */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <StarIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Competencias Requeridas
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.Competencias_Requerimiento || 'No especificadas'}</p>
+                </div>
             </div>
-        </>
+        </div>
     );
 
-    // Renderizar detalles de la empresa seleccionada
+
     const renderCompanyDetails = () => (
-        <>
-            <h3 className="text-lg font-semibold text-gray-700">Información de la Empresa</h3>
-            <p className="text-gray-600 mt-4">{selectedJob.empresa?.descripcion || 'No especificada'}</p>
-            <p className="text-gray-600 mt-4">Dirección: {selectedJob.empresa?.direccion || 'No especificada'}</p>
-            <p className="text-gray-600 mt-4">Teléfono: {selectedJob.empresa?.telefono || 'No especificado'}</p>
-            <p className="text-gray-600 mt-4">Sitio Web: {selectedJob.empresa?.sitioWeb ? (
-                <a href={selectedJob.empresa?.sitioWeb} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {selectedJob.empresa.sitioWeb}
-                </a>
-            ) : 'No especificado'}</p>
-        </>
+        <div className="bg-white p-6 max-w-8xl mx-auto">
+
+            {/* Detalles de la empresa */}
+            <div className="space-y-6">
+                {/* Descripción */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <InformationCircleIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Descripción de la Empresa
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.descripcion || 'No especificada'}</p>
+                </div>
+
+                {/* Dirección */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <MapPinIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Dirección
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.direccion || 'No especificada'}</p>
+                </div>
+
+                {/* Teléfono */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <PhoneIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Teléfono
+                    </h3>
+                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.telefono || 'No especificado'}</p>
+                </div>
+
+                {/* Sitio Web */}
+                <div>
+                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
+                        <GlobeAltIcon className="h-8 w-8 text-blue-500 mr-2" />
+                        Sitio Web
+                    </h3>
+                    <p className="text-gray-600 text-lg">
+                        {selectedJob.empresa?.sitioWeb ? (
+                            <a href={selectedJob.empresa?.sitioWeb} target="_blank" rel="noopener noreferrer"
+                               className="text-blue-600 hover:underline">
+                                {selectedJob.empresa.sitioWeb}
+                            </a>
+                        ) : 'No especificado'}
+                    </p>
+                </div>
+            </div>
+
+        </div>
     );
-
-    if (error) return <p>{error}</p>;
-    if (!userData) return <p>Cargando...</p>
-
-
-
-
-
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
@@ -345,7 +423,7 @@ const Home = ({ username }) => {
                         <div>
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center">
-                                <span className="text-white text-xl font-bold">ES</span>
+                                    <span className="text-white text-xl font-bold">ES</span>
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-semibold text-gray-800">Estado de Solicitudes</h2>
@@ -438,85 +516,115 @@ const Home = ({ username }) => {
                 </div>
 
                 {/* Filtros */}
-                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                    <input
-                        type="text"
-                        name="titulo"
-                        placeholder="Buscar por Título de la Plaza"
-                        value={filters.titulo}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    />
 
-                    <input
-                        type="text"
-                        name="ubicacion"
-                        placeholder="Buscar por Ubicación"
-                        value={filters.ubicacion}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    />
+                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                        <div className="relative">
+                            <MagnifyingGlassIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                            />
+                        <input
+                            type="text"
+                            name="titulo"
+                            placeholder="Buscar por Título de la Plaza"
+                            value={filters.titulo}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                        />
 
-                    <select
-                        type="number"
-                        name="salario"
-                        placeholder="Filtrar por salario máximo"
-                        value={filters.salario}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    >
-                        <option value="">Filtrar por salario máximo</option>
-                        <option value="5000">Q5,000 o menos</option>
-                        <option value="10000">Q10,000 o menos</option>
-                        <option value="20000">Q20,000 o menos</option>
-                        <option value="100000">Q100,000 o menos</option>
-                        <option value="500000">Q500,000 o menos</option>
-                    </select>
-                </div>
+                    </div>
 
-                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                    <select
-                        name="tipoTrabajo"
-                        value={filters.tipoTrabajo}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    >
-                        <option value="">Filtrar por tipo de trabajo</option>
-                        <option value="Tiempo Completo">Tiempo Completo</option>
-                        <option value="Tiempo Parcial">Tiempo Parcial</option>
-                        <option value="Por Proyecto">Por Proyecto</option>
-                    </select>
+                        <div className="relative">
+                            <MagnifyingGlassIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                            />
+                        <input
+                            type="text"
+                            name="ubicacion"
+                            placeholder="Buscar por Ubicación"
+                            value={filters.ubicacion}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                        />
+                        </div>
 
-                    <select
-                        name="modalidad"
-                        value={filters.modalidad}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    >
-                        <option value="">Filtrar por modalidad</option>
-                        <option value="Presencial">Presencial</option>
-                        <option value="Remoto">Remoto</option>
-                        <option value="Híbrido">Híbrido</option>
-                    </select>
+                    <div className="relative">
+                            <CurrencyDollarIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                            />
 
-                    <select
-                        name="fecha"
-                        value={filters.fecha}
-                        onChange={handleFilterChange}
-                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
-                    >
-                        <option value="">Filtrar por fecha</option>
-                        <option value="7">Últimos 7 días</option>
-                        <option value="30">Últimos 30 días</option>
-                        <option value="over30">Más de 30 días</option>
-                    </select>
-                </div>
+                            <select
+                                type="number"
+                                name="salario"
+                                placeholder="Filtrar por salario máximo"
+                                value={filters.salario}
+                                onChange={handleFilterChange}
+                                className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                            >
+                                <option value="">Filtrar por salario máximo</option>
+                                <option value="5000">Q5,000 o menos</option>
+                                <option value="10000">Q10,000 o menos</option>
+                                <option value="20000">Q20,000 o menos</option>
+                                <option value="100000">Q100,000 o menos</option>
+                                <option value="500000">Q500,000 o menos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                        <div className="relative">
+                            <BriefcaseIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                        <select
+                            name="tipoTrabajo"
+                            value={filters.tipoTrabajo}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                        >
+                            <option value="">Filtrar por tipo de trabajo</option>
+                            <option value="Tiempo Completo">Tiempo Completo</option>
+                            <option value="Tiempo Parcial">Tiempo Parcial</option>
+                            <option value="Por Proyecto">Por Proyecto</option>
+                        </select>
+
+                        </div>
+
+                        <div className="relative">
+                            <BriefcaseIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                        <select
+                            name="modalidad"
+                            value={filters.modalidad}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                        >
+                            <option value="">Filtrar por modalidad</option>
+                            <option value="Presencial">Presencial</option>
+                            <option value="Remoto">Remoto</option>
+                            <option value="Híbrido">Híbrido</option>
+                        </select>
+
+                        </div>
+                        <div className="relative">
+
+                            <CalendarIcon
+                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                            />
+                            <select
+                                name="fecha"
+                                value={filters.fecha}
+                                onChange={handleFilterChange}
+                                className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                            >
+                                <option value="">Filtrar por fecha</option>
+                                <option value="7">Últimos 7 días</option>
+                                <option value="30">Últimos 30 días</option>
+                                <option value="over30">Más de 30 días</option>
+                            </select>
+                        </div>
+                    </div>
 
 
-
-
-
-                {/* Sección para mostrar todas las ofertas activas */}
+                    {/* Sección para mostrar todas las ofertas activas */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                     <div className="bg-white rounded-lg max-h-[730px] overflow-y-auto">
@@ -581,99 +689,114 @@ const Home = ({ username }) => {
                         </div>
                     </div>
 
-
-                    {selectedJob && (
-                        <div
-                            className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-xl border border-gray-200 p-6 relative">
-                            <div className="flex items-center mb-4">
-                                <div
-                                    className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
+                        {selectedJob && (
+                            <div
+                                className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-xl border border-gray-200 p-6 relative">
+                                <div className="flex items-center mb-4">
+                                    <div
+                                        className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
                                         <span
                                             className="text-lg font-bold text-white">{selectedJob.titulo.charAt(0)}</span>
+                                    </div>
+
+                                    <h2 className="ml-4 mt-4 text-3xl font-bold text-gray-800">{selectedJob.titulo}</h2>
+
                                 </div>
-                                <h2 className="ml-4 mt-4 text-3xl font-bold text-gray-800">{selectedJob.titulo}</h2>
-                            </div>
 
-                            <div className="flex py-6 space-x-4">
-                                <div className="px-6 py-4 bg-green-100 text-green-800 text-center rounded-2xl">
-                                    <div className="text-sm">Salario</div>
-                                    <div className="text-2xl font-bold">Q{selectedJob.salario} <span
-                                        className="text-base font-normal">/Mes</span></div>
+                                <div>
+                                    <div className="flex items-center space-x-2 text-gray-500">
+                                        <BuildingOfficeIcon className="h-5 w-5"/>
+                                        <span>{selectedJob.empresa?.nombre || 'Empresa no especificada'}</span>
+                                        <MapPinIcon className="h-5 w-5"/>
+                                        <span>{selectedJob.ubicacion || 'Ubicación no especificada'}</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2 mt-3 text-gray-500">
+
+                                        <CalendarIcon className="h-5 w-5"/>
+                                        <span>{selectedJob.fechaCierre ? `Fecha de cierre: ${selectedJob.fechaCierre}` : 'Sin fecha de cierre'}</span>
+                                    </div>
                                 </div>
-                                <div className="px-6 py-4 bg-blue-100 text-blue-800 text-center rounded-2xl">
-                                    <div className="text-sm">Tipo de Empleo</div>
-                                    <div
-                                        className="text-2xl font-bold">{selectedJob.tipoTrabajo || 'No especificado'}</div>
+
+                                <div className="flex py-6 space-x-4">
+                                    <div className="px-6 py-4 bg-green-100 text-green-800 text-center rounded-2xl">
+                                        <div className="text-sm">Salario</div>
+                                        <div className="text-2xl font-bold">Q{selectedJob.salario} <span
+                                            className="text-base font-normal">/Mes</span></div>
+                                    </div>
+                                    <div className="px-6 py-4 bg-blue-100 text-blue-800 text-center rounded-2xl">
+                                        <div className="text-sm">Tipo de Empleo</div>
+                                        <div
+                                            className="text-2xl font-bold">{selectedJob.tipoTrabajo || 'No especificado'}</div>
+                                    </div>
+                                    <div className="px-6 py-4 bg-orange-100 text-orange-800 text-center rounded-2xl">
+                                        <div className="text-sm">Modalidad</div>
+                                        <div
+                                            className="text-2xl font-bold">{selectedJob.modalidad || 'No especificada'}</div>
+                                    </div>
                                 </div>
-                                <div className="px-6 py-4 bg-orange-100 text-orange-800 text-center rounded-2xl">
-                                    <div className="text-sm">Modalidad</div>
-                                    <div
-                                        className="text-2xl font-bold">{selectedJob.modalidad || 'No especificada'}</div>
+
+                                <div className="mb-6 border-b border-gray-200">
+                                    <nav className="-mb-px flex space-x-8">
+                                        <button
+                                            onClick={() => setActiveTab('oferta')}
+                                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
+                                                activeTab === 'oferta'
+                                                    ? 'border-blue-600 text-blue-600'
+                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            Información de la oferta
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('empresa')}
+                                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
+                                                activeTab === 'empresa'
+                                                    ? 'border-blue-600 text-blue-600'
+                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            Información de la empresa
+                                        </button>
+                                    </nav>
                                 </div>
+
+                                {/* Mostrar detalles de la oferta o empresa */}
+                                {activeTab === 'oferta' ? renderOfferDetails() : renderCompanyDetails()}
+
+                                {/* Botón fijo para aplicar o ver el estado de la aplicación */}
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    {applicationStatus && applicationStatus.estado ? (
+                                        <button
+                                            className={`w-full px-6 py-4 rounded-lg text-white ${
+                                                applicationStatus.estado === 'pendiente'
+                                                    ? 'bg-yellow-500'
+                                                    : applicationStatus.estado === 'aceptada'
+                                                        ? 'bg-green-500'
+                                                        : 'bg-red-500'
+                                            } cursor-not-allowed`}
+                                            disabled
+                                        >
+                                            {`Estado de aplicación: ${
+                                                applicationStatus.estado === 'pendiente'
+                                                    ? 'Solicitud Pendiente'
+                                                    : applicationStatus.estado === 'aceptada'
+                                                        ? 'Solicitud Aceptada'
+                                                        : 'Solicitud Rechazada'
+                                            }`}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
+                                            onClick={() => applyToJob(selectedJob.id)}
+                                        >
+                                            Aplicar a esta oferta
+                                        </button>
+                                    )}
+                                </div>
+
+
                             </div>
-
-                            <div className="mb-6 border-b border-gray-200">
-                                <nav className="-mb-px flex space-x-8">
-                                    <button
-                                        onClick={() => setActiveTab('oferta')}
-                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
-                                            activeTab === 'oferta'
-                                                ? 'border-blue-600 text-blue-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
-                                    >
-                                        Información de la oferta
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('empresa')}
-                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
-                                            activeTab === 'empresa'
-                                                ? 'border-blue-600 text-blue-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
-                                    >
-                                        Información de la empresa
-                                    </button>
-                                </nav>
-                            </div>
-
-                            {/* Mostrar detalles de la oferta o empresa */}
-                            {activeTab === 'oferta' ? renderOfferDetails() : renderCompanyDetails()}
-
-                            {/* Botón fijo para aplicar o ver el estado de la aplicación */}
-                            <div className="absolute bottom-6 left-6 right-6">
-                                {applicationStatus && applicationStatus.estado ? (
-                                    <button
-                                        className={`w-full px-6 py-4 rounded-lg text-white ${
-                                            applicationStatus.estado === 'pendiente'
-                                                ? 'bg-yellow-500'
-                                                : applicationStatus.estado === 'aceptada'
-                                                    ? 'bg-green-500'
-                                                    : 'bg-red-500'
-                                        } cursor-not-allowed`}
-                                        disabled
-                                    >
-                                        {`Estado de aplicación: ${
-                                            applicationStatus.estado === 'pendiente'
-                                                ? 'Solicitud Pendiente'
-                                                : applicationStatus.estado === 'aceptada'
-                                                    ? 'Solicitud Aceptada'
-                                                    : 'Solicitud Rechazada'
-                                        }`}
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
-                                        onClick={() => applyToJob(selectedJob.id)}
-                                    >
-                                        Aplicar a esta oferta
-                                    </button>
-                                )}
-                            </div>
-
-
-                        </div>
-                    )}
+                        )}
 
                 </div>
 

@@ -82,7 +82,7 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    Competencias__Requerimiento: {
+    Competencias_Requerimiento: {
         type: DataTypes.STRING,
         allowNull: true,
     },

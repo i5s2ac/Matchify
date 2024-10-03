@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { PencilIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, UserIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
 
 const MySwal = withReactContent(Swal);
 
@@ -320,7 +320,7 @@ const CompanyHome = () => {
                                 </div>
                             </div>
 
-                            <div className="overflow-y-auto max-h-40">
+                            <div className="overflow-y-auto max-h-[80px]">
                                 {activeJobCount === 0 ? (
                                     <p className="text-gray-600">Actualmente no cuentas con plazas activas.</p>
                                 ) : (
@@ -359,7 +359,7 @@ const CompanyHome = () => {
                                 </div>
                             </div>
 
-                            <div className="overflow-y-auto max-h-40">
+                            <div className="overflow-y-auto max-h-[80px]">
                                 {inactiveJobCount === 0 ? (
                                     <p className="text-gray-600">Actualmente no cuentas con plazas inactivas o vencidas.</p>
                                 ) : (
@@ -512,7 +512,7 @@ const CompanyHome = () => {
                                             No se encontraron ofertas de trabajo con los filtros seleccionados.
                                         </p>
                                     ) : (
-                                        <ul className="space-y-6 max-h-[650px] overflow-y-auto pr-4">
+                                        <ul className="space-y-6 max-h-[620px] overflow-y-auto pr-4">
                                             {filteredJobOffers.map((offer) => (
                                                 <li key={offer.id} className="bg-white p-6 rounded-lg shadow-md">
                                                     <div className="flex items-center justify-between mb-4">
@@ -630,7 +630,7 @@ const CompanyHome = () => {
                             {loading ? (
                                 <p>Cargando...</p>
                             ) : (
-                                <div className="space-y-6 max-h-[650px] overflow-y-auto pr-4">
+                                <div className="space-y-6 min-h-[465px] overflow-y-auto pr-4">
 
                                     {activeTab === 'pending' && filteredPending.length > 0 ? (
                                         <table className="min-w-full bg-white border">
@@ -688,8 +688,17 @@ const CompanyHome = () => {
                                             </tbody>
                                         </table>
                                     ) : activeTab === 'pending' ? (
-                                        <p>No hay candidatos pendientes.</p>
+                                        <div className="flex flex-col items-center justify-center h-full w-full">
+                                            <div className="flex flex-col items-center justify-center rounded-lg p-48">
+                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4" />  {/* Agrega el ícono aquí */}
+                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay candidatos pendientes</h2>
+                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos en espera para esta oferta.</p>
+                                            </div>
+                                        </div>
                                     ) : null}
+
+
+
 
                                     {activeTab === 'history' && filteredHistory.length > 0 ? (
                                         <table className="min-w-full bg-white border">
@@ -731,7 +740,13 @@ const CompanyHome = () => {
                                             </tbody>
                                         </table>
                                     ) : activeTab === 'history' ? (
-                                        <p>No hay historial de candidatos.</p>
+                                        <div className="flex flex-col items-center justify-center h-full w-full">
+                                            <div className="flex flex-col items-center justify-center rounded-lg p-48">
+                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4" />
+                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay candidatos en el historial</h2>
+                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos en tu historial para esta oferta.</p>
+                                            </div>
+                                        </div>
                                     ) : null}
                                 </div>
                             )}
