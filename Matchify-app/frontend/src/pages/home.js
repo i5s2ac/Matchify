@@ -16,7 +16,37 @@ const Home = ({ username }) => {
     const [applicationStatus, setApplicationStatus] = useState(null); // Estado de la aplicación
     const { userId } = useParams();
     const [stats, setStats] = useState({ aceptadas: 0, rechazadas: 0, pendientes: 0 });
+    const [filteredJobs, setFilteredJobs] = useState([]);
 
+    const fetchActiveJobs = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/job/active`);
+            const jobs = response.data.ofertas;
+
+            const jobsWithCompanyData = await Promise.all(
+                jobs.map(async (job) => {
+                    try {
+                        const companyResponse = await axios.get(`http://localhost:3001/company/${job.empresaId}`);
+                        return {
+                            ...job,
+                            empresa: companyResponse.data.empresa,
+                        };
+                    } catch (error) {
+                        console.error('Error fetching company data:', error);
+                        return {
+                            ...job,
+                            empresa: null,
+                        };
+                    }
+                })
+            );
+
+            setActiveJobs(jobsWithCompanyData);
+        } catch (error) {
+            console.error('Error fetching active job offers:', error);
+            setError('Error al obtener las ofertas activas.');
+        }
+    };
     // Función para obtener la información del usuario
     useEffect(() => {
         const fetchData = async () => {
@@ -31,38 +61,6 @@ const Home = ({ username }) => {
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 setError('Error al obtener los datos del usuario');
-            }
-        };
-
-        // Función para obtener las ofertas activas de todas las empresas
-        const fetchActiveJobs = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/job/active`);
-                const jobs = response.data.ofertas;
-
-                // Para cada oferta, obtenemos los datos de la empresa
-                const jobsWithCompanyData = await Promise.all(
-                    jobs.map(async (job) => {
-                        try {
-                            const companyResponse = await axios.get(`http://localhost:3001/company/${job.empresaId}`);
-                            return {
-                                ...job,
-                                empresa: companyResponse.data.empresa, // Añadir la información de la empresa a cada oferta
-                            };
-                        } catch (error) {
-                            console.error('Error fetching company data:', error);
-                            return {
-                                ...job,
-                                empresa: null, // Si falla, asigna null a la empresa
-                            };
-                        }
-                    })
-                );
-
-                setActiveJobs(jobsWithCompanyData); // Actualiza el estado con los datos de las ofertas incluyendo la empresa
-            } catch (error) {
-                console.error('Error fetching active job offers:', error);
-                setError('Error al obtener las ofertas activas.');
             }
         };
 
@@ -98,6 +96,71 @@ const Home = ({ username }) => {
                 borderWidth: 1,
             },
         ],
+    };
+
+    const [filters, setFilters] = useState({
+        titulo: '',
+        ubicacion: '',
+        salario: '',
+        tipoTrabajo: '',
+        modalidad: '',
+        fechaPublicacion: '',
+    });
+
+    // Filtrar las ofertas de empleo
+    useEffect(() => {
+        let filtered = activeJobs;
+
+        if (filters.titulo) {
+            filtered = filtered.filter((job) => job.titulo.toLowerCase().includes(filters.titulo.toLowerCase()));
+        }
+
+        if (filters.ubicacion) {
+            filtered = filtered.filter((job) => job.ubicacion.toLowerCase().includes(filters.ubicacion.toLowerCase()));
+        }
+
+        if (filters.salario) {
+            filtered = filtered.filter((job) => parseFloat(job.salario) <= parseFloat(filters.salario));
+        }
+
+        if (filters.tipoTrabajo) {
+            filtered = filtered.filter((job) => job.tipoTrabajo === filters.tipoTrabajo);
+        }
+
+        if (filters.modalidad) {
+            filtered = filtered.filter((job) => job.modalidad === filters.modalidad);
+        }
+
+        if (filters.fecha) {
+            const today = new Date();
+            filtered = filtered.filter((job) => {
+                const jobDate = new Date(job.fechaPublicacion);
+                const diffInDays = Math.ceil((today - jobDate) / (1000 * 60 * 60 * 24));
+
+                if (filters.fecha === '7') {
+                    return diffInDays <= 7;
+                } else if (filters.fecha === '30') {
+                    return diffInDays <= 30;
+                } else {
+                    return diffInDays > 30;
+                }
+            });
+        }
+
+        setFilteredJobs(filtered);
+    }, [filters, activeJobs]);
+
+    useEffect(() => {
+        fetchActiveJobs();  // Llamar a fetchActiveJobs aquí
+    }, [userId]);
+
+    // Función para manejar los cambios en los filtros
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [name]: value,
+        }));
     };
 
 
@@ -208,7 +271,12 @@ const Home = ({ username }) => {
     );
 
     if (error) return <p>{error}</p>;
-    if (!userData) return <p>Cargando...</p>;
+    if (!userData) return <p>Cargando...</p>
+
+
+
+
+
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
@@ -369,20 +437,98 @@ const Home = ({ username }) => {
                     </div>
                 </div>
 
+                {/* Filtros */}
+                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                    <input
+                        type="text"
+                        name="titulo"
+                        placeholder="Buscar por Título de la Plaza"
+                        value={filters.titulo}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    />
+
+                    <input
+                        type="text"
+                        name="ubicacion"
+                        placeholder="Buscar por Ubicación"
+                        value={filters.ubicacion}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    />
+
+                    <select
+                        type="number"
+                        name="salario"
+                        placeholder="Filtrar por salario máximo"
+                        value={filters.salario}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="">Filtrar por salario máximo</option>
+                        <option value="5000">Q5,000 o menos</option>
+                        <option value="10000">Q10,000 o menos</option>
+                        <option value="20000">Q20,000 o menos</option>
+                        <option value="100000">Q100,000 o menos</option>
+                        <option value="500000">Q500,000 o menos</option>
+                    </select>
+                </div>
+
+                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                    <select
+                        name="tipoTrabajo"
+                        value={filters.tipoTrabajo}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="">Filtrar por tipo de trabajo</option>
+                        <option value="Tiempo Completo">Tiempo Completo</option>
+                        <option value="Tiempo Parcial">Tiempo Parcial</option>
+                        <option value="Por Proyecto">Por Proyecto</option>
+                    </select>
+
+                    <select
+                        name="modalidad"
+                        value={filters.modalidad}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="">Filtrar por modalidad</option>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Remoto">Remoto</option>
+                        <option value="Híbrido">Híbrido</option>
+                    </select>
+
+                    <select
+                        name="fecha"
+                        value={filters.fecha}
+                        onChange={handleFilterChange}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                    >
+                        <option value="">Filtrar por fecha</option>
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30">Últimos 30 días</option>
+                        <option value="over30">Más de 30 días</option>
+                    </select>
+                </div>
+
+
+
+
 
                 {/* Sección para mostrar todas las ofertas activas */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                     <div className="bg-white rounded-lg max-h-[730px] overflow-y-auto">
                         <div className="space-y-6">
-                            {activeJobs.length > 0 ? (
-                                activeJobs.map((job) => (
+                            {filteredJobs.length > 0 ? (
+                                filteredJobs.map((job) => (
                                     <div
                                         key={job.id}
-                                        onClick={() => handleJobClick(job)}
-                                        className={`bg-white cursor-pointer rounded-lg shadow-xl p-6 hover:shadow-lg border transition duration-200 ${
+                                        className={`bg-white rounded-lg shadow-lg p-6 hover:shadow-xl border transition duration-200 ${
                                             selectedJob && selectedJob.id === job.id ? 'border-blue-500' : 'border-gray-200'
                                         }`}
+                                        onClick={() => handleJobClick(job)}
                                     >
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center">
