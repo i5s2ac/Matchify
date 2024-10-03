@@ -8,10 +8,9 @@ import RegisterEnterprise from './pages/register_enterprise';
 import CompanyHome from './pages/CompanyHome';
 import CreateOfferPage from './pages/CreateOffer';
 import EditOfferPage from './pages/EditOfferPage';
-
-
 import './styles/index.css';
 import Navbar from './components/navbar';
+import CV from './pages/cv'
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,7 +28,7 @@ function App() {
                 <Route path="/home/:userId/:empresaId/:rolId" element={<CompanyHome />} />
                 <Route path="/home/:userId/:empresaId/:rolId/create_offer" element={<CreateOfferPage />} />
                 <Route path="/home/:userId/:empresaId/:rolId/edit_offer/:offerId" element={<EditOfferPage />} />
-
+                <Route path="/CV/:userId" element={<CV />} />
             </Routes>
         </Router>
     );

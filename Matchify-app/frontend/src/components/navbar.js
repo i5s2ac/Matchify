@@ -24,7 +24,7 @@ export default function Navbar({ userId, empresaId, rolId }) {
         const fetchUser = async () => {
             const token = localStorage.getItem("token");
             if (!token) {
-                navigate("/auth/login");
+                navigate("/login");
                 return;
             }
 
@@ -64,11 +64,11 @@ export default function Navbar({ userId, empresaId, rolId }) {
                         console.error('Error fetching CV data:', cvData.message);
                     }
                 } else {
-                    navigate("/auth/login");
+                    navigate("/login");
                 }
             } catch (error) {
                 console.error("Error fetching user data:", error);
-                navigate("/auth/login");
+                navigate("/login");
             } finally {
                 setLoading(false);
             }
@@ -81,7 +81,7 @@ export default function Navbar({ userId, empresaId, rolId }) {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/auth/login");
+        navigate("/login");
     };
 
     const dashboardHref = empresaId && rolId

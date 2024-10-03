@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import industryRoutes from './routes/industryRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import candidatoRoutes from './routes/candidatoRoutes.js';
+import cvRoutes from './routes/cvRoutes.js'
 
 import sequelize from './config/database.js'; // Importa la conexión a la base de datos
 import defineAssociations from './models/associations.js'; // Importa las asociaciones
@@ -27,6 +28,8 @@ app.use('/job', jobRoutes);
 app.use('/industry', industryRoutes);
 app.use('/company', companyRoutes);
 app.use('/candidatos', candidatoRoutes);
+app.use('/cv', cvRoutes);
+
 
 // Endpoint "Hola Mundo"
 app.get('/', (req, res) => {

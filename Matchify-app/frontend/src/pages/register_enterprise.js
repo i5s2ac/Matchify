@@ -26,6 +26,18 @@ const RegisterCompanyPage = () => {
             setLoadingIndustrias(true);
             try {
                 const response = await axios.get('http://localhost:3001/industry');
+                console.log('Response data:', response.data); // Verifica la estructura de la respuesta
+
+                const industriasData = response.data.industrias;
+
+                // Verifica si el dato recibido es un array
+                if (Array.isArray(industriasData)) {
+                    setIndustrias(industriasData);
+                } else {
+                    setIndustrias([]);  // Si no es un array, asigna un array vacío
+                }
+
+                setLoadingIndustrias(false);
                 if (response.data.success && Array.isArray(response.data.industrias)) {
                     setIndustrias(response.data.industrias);  // Acceder al array de industrias
                 } else {
@@ -39,6 +51,9 @@ const RegisterCompanyPage = () => {
         };
         fetchIndustrias();
     }, []);
+
+
+
 
 
     const handleNextStep = () => {
@@ -83,6 +98,7 @@ const RegisterCompanyPage = () => {
         }
     };
 
+
     return (
         <div className="min-h-screen flex">
             <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-16">
@@ -94,7 +110,8 @@ const RegisterCompanyPage = () => {
                             {loadingIndustrias ? <p>Loading industries...</p> : (
                                 <form className="space-y-6" style={{ maxHeight: '340px', overflowY: 'auto' }}>
                                     <div>
-                                        <label htmlFor="industria" className="block text-lg font-medium text-gray-700">Industry</label>
+                                        <label htmlFor="industria"
+                                               className="block text-lg font-medium text-gray-700">Industry</label>
                                         <select
                                             id="industria"
                                             className="mt-1 block w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
