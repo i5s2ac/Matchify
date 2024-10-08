@@ -1,7 +1,7 @@
 import { createEducacion, createCertificacion, createExperienciaLaboral, createIdioma, createSkill,
     updateEducacion, updateCertificacion, updateExperienciaLaboral, updateIdioma, updateSkill,
     deleteEducacion, deleteCertificacion, deleteExperienciaLaboral, deleteIdioma, deleteSkill,
-    getEducacion, getCertificacion, getExperienciaLaboral, getIdioma, getSkill} from '../repositories/cvRepository.js';
+    getEducacion, getCertificacion, getExperienciaLaboral, getIdioma, getSkill, getCVCandidato} from '../repositories/cvRepository.js';
 
 export const createCVService = async (userId, cvData) => {
     const { educacion = [], certificaciones = [], experienciaLaboral = [], idiomas = [], skills = [] } = cvData;
@@ -94,4 +94,9 @@ export const getCVService = async (userId) => {
         idiomas,
         skills
     };
+};
+
+// Servicio para obtener el CV de un candidato basado en su candidatoId
+export const getCVCandidatoService = async (candidatoId) => {
+    return await getCVCandidato(candidatoId);  // Llama al repositorio para obtener los datos del CV
 };

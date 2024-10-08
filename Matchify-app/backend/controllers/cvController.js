@@ -1,4 +1,4 @@
-import { createCVService, updateCVService,  deleteCVSectionService, getCVService} from '../services/cvService.js';
+import { createCVService, updateCVService,  deleteCVSectionService, getCVService, getCVCandidatoService} from '../services/cvService.js';
 
 export const createCV = async (req, res) => {
     const { userId } = req.params;
@@ -44,5 +44,17 @@ export const getCV = async (req, res) => {
         return res.status(200).json({ success: true, data: result });
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Error al obtener el CV', error: error.message });
+    }
+};
+
+export const getCVCandidato = async (req, res) => {
+    const { candidatoId } = req.params;
+    console.log(`Solicitud para obtener CV del candidato con ID: ${candidatoId}`);
+
+    try {
+        const cv = await getCVCandidatoService(candidatoId);
+        return res.status(200).json({ success: true, data: cv });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error al obtener el CV del candidato', error: error.message });
     }
 };

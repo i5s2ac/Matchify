@@ -233,3 +233,20 @@ export const getSkill = async (usuarioId) => {
         where: { usuarioId }
     });
 };
+
+// Obtener el CV completo basado en el candidatoId (que es el mismo que el userId)
+export const getCVCandidato = async (candidatoId) => {
+    const educacion = await Educacion.findAll({ where: { usuarioId: candidatoId } });
+    const certificaciones = await Certificacion.findAll({ where: { usuarioId: candidatoId } });
+    const experienciaLaboral = await ExperienciaLaboral.findAll({ where: { usuarioId: candidatoId } });
+    const idiomas = await Idioma.findAll({ where: { usuarioId: candidatoId } });
+    const skills = await Skill.findAll({ where: { usuarioId: candidatoId } });
+
+    return {
+        educacion,
+        certificaciones,
+        experienciaLaboral,
+        idiomas,
+        skills
+    };
+};

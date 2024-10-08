@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCV, updateCV, deleteCVSection, getCV} from '../controllers/cvController.js';
+import { createCV, updateCV, deleteCVSection, getCV, getCVCandidato} from '../controllers/cvController.js';
 
 const router = express.Router();
 
@@ -13,6 +13,9 @@ router.put('/:userId', updateCV);
 router.delete('/:userId/:section/:id', deleteCVSection);
 
 router.get('/:userId', getCV);
+
+// Nueva ruta para obtener el CV de un candidato por su candidatoId
+router.get('/candidato/:candidatoId/cv', getCVCandidato);
 
 
 export default router;

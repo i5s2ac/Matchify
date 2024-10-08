@@ -4,6 +4,9 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { PencilIcon, UserIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');  // O el ID de tu div principal
 
 const MySwal = withReactContent(Swal);
 
@@ -21,7 +24,23 @@ const CompanyHome = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOfferId, setSelectedOfferId] = useState(null);
+    const [selectedCV, setSelectedCV] = useState(null);  // Guardar el CV del candidato
+    const [modalIsOpen, setIsOpen] = useState(false);
 
+    const openModal = async (candidatoId, username) => {
+        console.log(`Abriendo modal para el candidato con ID: ${candidatoId}`);
+        const cv = await fetchCV(candidatoId);
+        if (cv) {
+            setSelectedCV({ ...cv, username });  // Agrega el username al CV
+            setIsOpen(true);  // Abre el modal si se obtuvo el CV
+            console.log("Modal abierto");
+        }
+    };
+
+    const closeModal = () => {
+        setIsOpen(false);
+        setSelectedCV(null);  // Limpiar el CV cuando se cierre el modal
+    };
 
     const fetchJobOffers = async () => {
         try {
@@ -58,8 +77,16 @@ const CompanyHome = () => {
         }
     };
 
-
-
+    // Función para obtener el CV del candidato seleccionado
+    const fetchCV = async (candidatoId) => {
+        try {
+            const response = await axios.get(`http://localhost:3001/cv/candidato/${candidatoId}/cv`);
+            return response.data.data;  // Devuelve el CV obtenido
+        } catch (error) {
+            console.error('Error al obtener el CV del candidato:', error);
+            return null;
+        }
+    };
 
 
     // Función para obtener candidatos pendientes e historial
@@ -117,6 +144,8 @@ const CompanyHome = () => {
         fetchJobOffers();
         fetchCandidates();
     }, [empresaId, userId]);
+
+
 
     // Función para manejar la eliminación de una oferta
     const handleDelete = async (offerId) => {
@@ -519,9 +548,9 @@ const CompanyHome = () => {
                                                         <div className="flex items-center">
                                                             <div
                                                                 className="bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
-                                            <span className="text-lg font-bold text-white">
-                                                {offer.titulo.charAt(0)}
-                                            </span>
+                                                <span className="text-lg font-bold text-white">
+                                                    {offer.titulo.charAt(0)}
+                                                </span>
                                                             </div>
                                                             <div className="ml-4">
                                                                 <h3 className="text-lg font-semibold text-gray-900 truncate">
@@ -558,8 +587,8 @@ const CompanyHome = () => {
                                                         {offer.tags && (Array.isArray(offer.tags) ? offer.tags : offer.tags.split(',')).map((tag, index) => (
                                                             <span key={index}
                                                                   className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded">
-                                            {tag.trim()}
-                                        </span>
+                                                {tag.trim()}
+                                            </span>
                                                         ))}
                                                     </div>
                                                     <div className="flex space-x-2 mt-6 border-t border-gray-200 pt-4">
@@ -587,7 +616,6 @@ const CompanyHome = () => {
                         </div>
                     </div>
 
-
                     <div className="w-full md:w-2/3 pl-4 mt-6 md:mt-0">
                         <h2 className="text-2xl font-semibold text-gray-800 mt-3">Candidatos</h2>
                         <p className="text-md text-gray-500 mt-3">Administra los candidatos para tus ofertas.</p>
@@ -606,7 +634,6 @@ const CompanyHome = () => {
                                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
                                 />
                             </div>
-
 
                             <div className="flex space-x-4 mb-6 border-b-2 border-gray-200">
                                 <button
@@ -646,7 +673,7 @@ const CompanyHome = () => {
                                             </thead>
                                             <tbody className="text-gray-600">
                                             {filteredPending.map((candidato) => (
-                                                <tr key={candidato.id} className="border-b hover:bg-gray-50">
+                                                <tr key={candidato.candidato.id} className="border-b hover:bg-gray-50">
                                                     <td className="py-3 px-6">{candidato.ofertaEmpleo.titulo}</td>
                                                     <td className="py-3 px-6">Q{parseFloat(candidato.ofertaEmpleo.salario).toLocaleString()}</td>
                                                     <td className="py-3 px-6">
@@ -664,12 +691,20 @@ const CompanyHome = () => {
                                                                     key={index}
                                                                     className="bg-gray-100 text-gray-800 text-sm font-medium px-2 py-0.5 rounded"
                                                                 >
-                                                {tag}
-                                            </span>
+                                                    {tag}
+                                                </span>
                                                             ))}
                                                         </div>
                                                     </td>
                                                     <td className="py-3 px-6 flex space-x-2">
+                                                        <button
+                                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                                            onClick={() => openModal(candidato.candidato.id, candidato.candidato.username)}  // Pasa el ID y el username
+                                                        >
+                                                            Ver CV
+                                                        </button>
+
+
                                                         <button
                                                             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
                                                             onClick={() => handleUpdateCandidato(candidato.id, 'aceptada')}
@@ -690,15 +725,14 @@ const CompanyHome = () => {
                                     ) : activeTab === 'pending' ? (
                                         <div className="flex flex-col items-center justify-center h-full w-full">
                                             <div className="flex flex-col items-center justify-center rounded-lg p-48">
-                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4" />  {/* Agrega el ícono aquí */}
-                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay candidatos pendientes</h2>
-                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos en espera para esta oferta.</p>
+                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4"/>
+                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay
+                                                    candidatos pendientes</h2>
+                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos
+                                                    en espera para esta oferta.</p>
                                             </div>
                                         </div>
                                     ) : null}
-
-
-
 
                                     {activeTab === 'history' && filteredHistory.length > 0 ? (
                                         <table className="min-w-full bg-white border">
@@ -725,15 +759,13 @@ const CompanyHome = () => {
                                                     </td>
                                                     <td className="py-3 px-6">{candidato.candidato.username}</td>
                                                     <td className="py-3 px-6">
-                                    <span
-                                        className={`px-3 py-2 rounded-full text-sm ${
-                                            candidato.estado === 'aceptada'
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-red-500 text-white'
-                                        }`}
-                                    >
-                                        {candidato.estado === 'aceptada' ? 'Aceptado' : 'Rechazado'}
-                                    </span>
+                                        <span
+                                            className={`px-3 py-2 rounded-full text-sm ${
+                                                candidato.estado === 'aceptada' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                                            }`}
+                                        >
+                                            {candidato.estado === 'aceptada' ? 'Aceptado' : 'Rechazado'}
+                                        </span>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -752,8 +784,140 @@ const CompanyHome = () => {
                             )}
                         </div>
                     </div>
-
                 </div>
+
+                {/* Modal para mostrar el CV */}
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="CV del Candidato"
+                    className="bg-white p-10 rounded-2xl shadow-2xl max-w-4xl mx-auto my-8 w-full"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center"
+                >
+                    {/* Título del modal con botón de cerrar */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-4xl font-extrabold text-gray-800">Perfil del Candidato</h2>
+                        <button
+                            onClick={closeModal}
+                            className="text-gray-500 hover:text-gray-900 transition duration-300"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* Información general en un box más limpio */}
+                    <div className="mb-8 p-6 bg-gray-100 rounded-lg shadow-sm">
+                        <h3 className="text-2xl font-semibold text-blue-700 mb-2">Información General</h3>
+                        <p className="text-lg text-gray-700"><strong>Nombre:</strong> {selectedCV?.username || 'N/A'}</p>
+                    </div>
+
+                    {/* Layout más limpio para las secciones */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                        {/* Educación */}
+                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
+                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Educación</h3>
+                            {selectedCV?.educacion.length > 0 ? (
+                                <ul className="list-none space-y-2">
+                                    {selectedCV.educacion.map((edu, index) => (
+                                        <li key={index} className="text-gray-600">
+                                            <strong>{edu.titulo}</strong> - {edu.institucion}
+                                            <br/>
+                                            <span className="text-sm text-gray-500">{edu.fechaInicio} - {edu.fechaFin}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500">No hay datos de educación.</p>
+                            )}
+                        </div>
+
+                        {/* Certificaciones */}
+                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
+                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Certificaciones</h3>
+                            {selectedCV?.certificaciones.length > 0 ? (
+                                <ul className="list-none space-y-2">
+                                    {selectedCV.certificaciones.map((cert, index) => (
+                                        <li key={index} className="text-gray-600">
+                                            <strong>{cert.nombre}</strong> - {cert.institucion}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500">No hay datos de certificaciones.</p>
+                            )}
+                        </div>
+
+                        {/* Experiencia Laboral */}
+                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
+                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Experiencia Laboral</h3>
+                            {selectedCV?.experienciaLaboral.length > 0 ? (
+                                <ul className="list-none space-y-2">
+                                    {selectedCV.experienciaLaboral.map((exp, index) => (
+                                        <li key={index} className="text-gray-600">
+                                            <strong>{exp.titulo}</strong> - {exp.empresa}
+                                            <br/>
+                                            <span className="text-sm text-gray-500">{exp.fechaInicio} - {exp.fechaFin}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500">No hay datos de experiencia laboral.</p>
+                            )}
+                        </div>
+
+                        {/* Idiomas */}
+                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
+                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Idiomas</h3>
+                            {selectedCV?.idiomas.length > 0 ? (
+                                <ul className="list-none space-y-2">
+                                    {selectedCV.idiomas.map((idioma, index) => (
+                                        <li key={index} className="text-gray-600">
+                                            {idioma.nombre} - Nivel: {idioma.nivel}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500">No hay datos de idiomas.</p>
+                            )}
+                        </div>
+
+                        {/* Habilidades */}
+                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
+                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Habilidades</h3>
+                            {selectedCV?.skills.length > 0 ? (
+                                <ul className="list-none space-y-2">
+                                    {selectedCV.skills.map((skill, index) => (
+                                        <li key={index} className="text-gray-600">
+                                            {skill.nombre} - Nivel: {skill.nivel}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-gray-500">No hay datos de habilidades.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Botón de cerrar */}
+                    <div className="mt-8 text-right">
+                        <button
+                            onClick={closeModal}
+                            className="bg-blue-700 text-white py-2 px-6 rounded-lg hover:bg-blue-800 transition-all"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </Modal>
+
+
+
+
+
+
+
             </main>
         </div>
     );
