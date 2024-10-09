@@ -220,7 +220,7 @@ const CVForm = () => {
                                 type="text"
                                 placeholder="Institución"
                                 value={cert.organizacionEmisora}
-                                onChange={(e) => handleInputChange('certificacion', index, 'organizacionEmisora', e.target.value)}
+                                onChange={(e) => handleInputChange('certificacion', index, 'institucion', e.target.value)}
                                 className="border-b w-full p-2 mb-3 focus:outline-none focus:border-green-500"
                             />
                             <input

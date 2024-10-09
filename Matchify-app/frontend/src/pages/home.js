@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Bar } from 'react-chartjs-2';
@@ -32,6 +33,7 @@ const Home = ({ username }) => {
     const { userId } = useParams();
     const [stats, setStats] = useState({ aceptadas: 0, rechazadas: 0, pendientes: 0 });
     const [filteredJobs, setFilteredJobs] = useState([]);
+    const navigate = useNavigate();
 
     const fetchActiveJobs = async () => {
         try {
@@ -473,7 +475,7 @@ const Home = ({ username }) => {
 
                             {/* Botón fijo */}
                             <button
-                                onClick={() => alert("Revisar CV")}
+                                onClick={() => navigate(`/CV/${userId}`)}
                                 className="bg-indigo-600 text-white w-full py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                                 Revisar CV

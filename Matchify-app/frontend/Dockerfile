@@ -1,47 +1,26 @@
-# Etapa de construcción
-FROM node:18 AS build
+# Usa la imagen base de Node.js
+FROM node:18
 
-WORKDIR /usr/src/app
+# Establece el directorio de trabajo
+WORKDIR /app
 
-# Instala dependencias
+# Copia y cachea las dependencias de Node.js
 COPY package*.json ./
 RUN npm install
 
-# Copia todo el código fuente
+# Copia el resto del código fuente
 COPY . .
 
-# Construye la aplicación para producción
-RUN npm run build
+# Instala nodemon como dependencia de desarrollo
+RUN npm install -g nodemon
 
-
-# Etapa de desarrollo (para hot-reload)
-FROM node:18 AS development
-
-WORKDIR /usr/src/app
-
-# Copia solo los archivos necesarios de la etapa de construcción
-COPY --from=build /usr/src/app ./
-
-# Establece el modo de desarrollo
+# Configura el entorno de desarrollo y la observación de archivos
 ENV NODE_ENV=development
 ENV CHOKIDAR_USEPOLLING=true
 
+# Expone el puerto que usará la aplicación
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
-
-
-# Etapa de producción
-FROM node:18 AS production
-
-WORKDIR /usr/src/app
-
-# Copia los archivos de la etapa de construcción
-COPY --from=build /usr/src/app ./
-
-# Establece el modo de producción
-ENV NODE_ENV=production
-
-EXPOSE 3000
-
+# Comando para iniciar la aplicación en desarrollo con nodemon
 CMD ["npm", "start"]
+

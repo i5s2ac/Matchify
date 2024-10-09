@@ -33,9 +33,9 @@ export const createCertificacion = async (usuarioId, certificacionData) => {
 // Crear registros de experiencia laboral
 export const createExperienciaLaboral = async (usuarioId, experienciaLaboralData) => {
     const result = await Promise.all(
-        experienciaLaboralData.map(async (experiencia) => {
+        experienciaLaboralData.map(async (experienciaLaboral) => {
             return await ExperienciaLaboral.create({
-                ...experiencia,
+                ...experienciaLaboral,
                 usuarioId
             });
         })
@@ -190,11 +190,11 @@ export const deleteIdioma = async (usuarioId, id) => {
 };
 
 // Eliminar un registro de habilidad (skill)
-export const deleteSkill = async (userId, id) => {
+export const deleteSkill = async (usuarioId, id) => {
     return await Skill.destroy({
         where: {
             id,
-            userId
+            usuarioId
         }
     });
 };
