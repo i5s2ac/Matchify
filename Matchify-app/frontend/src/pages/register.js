@@ -6,7 +6,7 @@ const Register = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [phone, setPhone] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ const Register = () => {
                 username,
                 email,
                 password,
-                phone,
+                telefono,
             });
             // Manejar la respuesta de éxito, redirigir o mostrar un mensaje
             console.log('Registro exitoso:', response.data);
@@ -80,14 +80,14 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="phone" className="block text-lg font-medium text-gray-700">Phone Number</label>
+                            <label htmlFor="telefono" className="block text-lg font-medium text-gray-700">Phone Number</label>
                             <input
                                 type="text"
-                                id="phone"
+                                id="telefono"
                                 className="mt-1 block w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                                 placeholder="Enter your phone number"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                value={telefono}
+                                onChange={(e) => setTelefono(e.target.value)}
                                 required
                             />
                         </div>

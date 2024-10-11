@@ -274,44 +274,40 @@ const CompanyHome = () => {
 
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-100">
+        <div className="min-h-screen flex flex-col bg-white">
 
 
             <main className="flex-grow p-6">
 
+                {/* Tarjeta de bienvenida */}
                 <div
-                    className="flex justify-between items-center mb-6 p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    className="flex justify-between items-center mb-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+
                     <div className="flex items-center space-x-4">
                         <img
-                            src="/images/Profile.jpg"  // Ruta de la imagen de perfil
+                            src="/images/Profile.jpg"
                             alt="Profile Picture"
-                            className="h-14 w-14 rounded-full border-2 border-gray-200 object-cover"
+                            className="h-16 w-16 rounded-full border-2 border-blue-500 object-cover shadow-md"
                         />
                         <div>
-                            <h1 className="text-2xl font-medium text-gray-900">
-                                ¡Hola, {userData?.username}!
-                            </h1>
-
+                            <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {userData?.username}!</h1>
                             <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu
                                 próximo reto</p>
                         </div>
                     </div>
-                    <div>
+                    <Link to={`/editprofile/${userId}`}>
                         <button
-                            className="px-5 py-2 bg-blue-600 text-white border border-gray-300 rounded-lg hover:bg-blue-700 transition focus:outline-none"
-                        >
-                            <Link href={`/home/user/${userId}/edit`}>
-                                Editar Perfil
-                            </Link>
+                            className="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Editar Perfil
                         </button>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Tarjetas de Resumen */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                     {/* Tarjeta de Crear Trabajo */}
                     <div
-                        className="bg-white rounded-lg border border-gray-200 shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between h-full">
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-blue-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
                         <div className="flex-grow">
                             <div className="flex items-center space-x-3 mb-4">
                                 <PlusCircleIcon className="h-14 w-14 text-blue-600"/>
@@ -337,7 +333,7 @@ const CompanyHome = () => {
 
                     {/* Tarjeta de Plazas Activas */}
                     <div
-                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between h-full">
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-green-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
                         <div className="flex-grow">
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="bg-green-500 rounded-full h-12 w-12 flex items-center justify-center">
@@ -349,7 +345,7 @@ const CompanyHome = () => {
                                 </div>
                             </div>
 
-                            <div className="overflow-y-auto max-h-[80px]">
+                            <div className="overflow-y-auto max-h-[125px]">
                                 {activeJobCount === 0 ? (
                                     <p className="text-gray-600">Actualmente no cuentas con plazas activas.</p>
                                 ) : (
@@ -358,7 +354,8 @@ const CompanyHome = () => {
                                         .map((job) => (
                                             <div key={job.id} className="mb-3">
                                                 <p className="text-gray-800 font-medium">{job.titulo}</p>
-                                                <p className="text-gray-500 text-sm">Publicado hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
+                                                <p className="text-gray-500 text-sm">Publicado
+                                                    hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
                                             </div>
                                         ))
                                 )}
@@ -376,7 +373,7 @@ const CompanyHome = () => {
 
                     {/* Tarjeta de Plazas Inactivas */}
                     <div
-                        className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl border border-gray-200 transition-shadow duration-300 relative flex flex-col justify-between h-full">
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-red-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
                         <div className="flex-grow">
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="bg-red-500 rounded-full h-12 w-12 flex items-center justify-center">
@@ -390,14 +387,16 @@ const CompanyHome = () => {
 
                             <div className="overflow-y-auto max-h-[80px]">
                                 {inactiveJobCount === 0 ? (
-                                    <p className="text-gray-600">Actualmente no cuentas con plazas inactivas o vencidas.</p>
+                                    <p className="text-gray-600">Actualmente no cuentas con plazas inactivas o
+                                        vencidas.</p>
                                 ) : (
                                     jobOffers
                                         .filter(offer => offer.estatus === 'Inactivo')
                                         .map((job) => (
                                             <div key={job.id} className="mb-3">
                                                 <p className="text-gray-800 font-medium">{job.titulo}</p>
-                                                <p className="text-gray-500 text-sm">Publicado hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
+                                                <p className="text-gray-500 text-sm">Publicado
+                                                    hace {calcularDiasDesdePublicacion(job.fechaPublicacion)} días</p>
                                             </div>
                                         ))
                                 )}
@@ -415,6 +414,8 @@ const CompanyHome = () => {
 
                 </div>
 
+                <h2 className="text-2xl font-semibold text-gray-800 mt-3 mb-3">Filtros Variados</h2>
+                <p className="text-md text-gray-500 mb-7">Filtra las plazas por ubicación, categoria o por fecha.</p>
 
                 {/* Filtros */}
                 <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -515,7 +516,7 @@ const CompanyHome = () => {
                         >
                             <option value="">Filtrar por modalidad</option>
                             <option value="Presencial">Presencial</option>
-                            <option value="Remoto">Remoto</option>
+                            <option value="Virtual">Virtual</option>
                             <option value="Híbrido">Híbrido</option>
                         </select>
                     </div>
@@ -541,9 +542,9 @@ const CompanyHome = () => {
                                             No se encontraron ofertas de trabajo con los filtros seleccionados.
                                         </p>
                                     ) : (
-                                        <ul className="space-y-6 max-h-[620px] overflow-y-auto pr-4">
+                                        <ul className="space-y-6 max-h-[660px] overflow-y-auto pr-4">
                                             {filteredJobOffers.map((offer) => (
-                                                <li key={offer.id} className="bg-white p-6 rounded-lg shadow-md">
+                                                <li key={offer.id} className="bg-white p-6 rounded-lg border border-gray-200 shadow-md">
                                                     <div className="flex items-center justify-between mb-4">
                                                         <div className="flex items-center">
                                                             <div
@@ -657,7 +658,7 @@ const CompanyHome = () => {
                             {loading ? (
                                 <p>Cargando...</p>
                             ) : (
-                                <div className="space-y-6 min-h-[465px] overflow-y-auto pr-4">
+                                <div className="space-y-6 min-h-[500px] overflow-y-auto pr-4">
 
                                     {activeTab === 'pending' && filteredPending.length > 0 ? (
                                         <table className="min-w-full bg-white border">
@@ -774,9 +775,11 @@ const CompanyHome = () => {
                                     ) : activeTab === 'history' ? (
                                         <div className="flex flex-col items-center justify-center h-full w-full">
                                             <div className="flex flex-col items-center justify-center rounded-lg p-48">
-                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4" />
-                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay candidatos en el historial</h2>
-                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos en tu historial para esta oferta.</p>
+                                                <UserIcon className="h-14 w-14 text-gray-400 mb-4"/>
+                                                <h2 className="text-2xl font-semibold text-gray-700 mb-3">No hay
+                                                    candidatos en el historial</h2>
+                                                <p className="text-lg text-gray-500">Parece que aún no tienes candidatos
+                                                    en tu historial para esta oferta.</p>
                                             </div>
                                         </div>
                                     ) : null}
@@ -791,41 +794,42 @@ const CompanyHome = () => {
                     isOpen={modalIsOpen}
                     onRequestClose={closeModal}
                     contentLabel="CV del Candidato"
-                    className="bg-white p-10 rounded-2xl shadow-2xl max-w-4xl mx-auto my-8 w-full"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center"
+                    className="bg-white p-8 rounded-xl shadow-2xl max-w-5xl mx-auto my-8 w-full"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
                 >
                     {/* Título del modal con botón de cerrar */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-4xl font-extrabold text-gray-800">Perfil del Candidato</h2>
+                    <div className="flex justify-between items-center mb-6 border-b pb-4">
+                        <h2 className="text-3xl font-bold text-gray-800">Perfil del Candidato</h2>
                         <button
                             onClick={closeModal}
-                            className="text-gray-500 hover:text-gray-900 transition duration-300"
+                            className="text-gray-600 hover:text-gray-900 transition duration-300"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2}
+                                 stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
 
-                    {/* Información general en un box más limpio */}
-                    <div className="mb-8 p-6 bg-gray-100 rounded-lg shadow-sm">
-                        <h3 className="text-2xl font-semibold text-blue-700 mb-2">Información General</h3>
-                        <p className="text-lg text-gray-700"><strong>Nombre:</strong> {selectedCV?.username || 'N/A'}</p>
+                    {/* Información general */}
+                    <div className="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
+                        <h3 className="text-xl font-semibold text-blue-700 mb-2">Información General</h3>
+                        <p className="text-gray-700"><strong>Nombre:</strong> {selectedCV?.username || 'N/A'}</p>
                     </div>
 
-                    {/* Layout más limpio para las secciones */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
+                    {/* Secciones con scroll y tamaño fijo */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Educación */}
-                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
-                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Educación</h3>
-                            {selectedCV?.educacion.length > 0 ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm h-40 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-blue-700 mb-2">Educación</h3>
+                            {selectedCV?.educacion && selectedCV.educacion.length > 0 ? (
                                 <ul className="list-none space-y-2">
                                     {selectedCV.educacion.map((edu, index) => (
                                         <li key={index} className="text-gray-600">
                                             <strong>{edu.titulo}</strong> - {edu.institucion}
                                             <br/>
-                                            <span className="text-sm text-gray-500">{edu.fechaInicio} - {edu.fechaFin}</span>
+                                            <span
+                                                className="text-sm text-gray-500">{edu.fechaInicio} - {edu.fechaFin}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -835,13 +839,13 @@ const CompanyHome = () => {
                         </div>
 
                         {/* Certificaciones */}
-                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
-                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Certificaciones</h3>
-                            {selectedCV?.certificaciones.length > 0 ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm h-40 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-blue-700 mb-2">Certificaciones</h3>
+                            {selectedCV?.certificaciones && selectedCV.certificaciones.length > 0 ? (
                                 <ul className="list-none space-y-2">
                                     {selectedCV.certificaciones.map((cert, index) => (
                                         <li key={index} className="text-gray-600">
-                                            <strong>{cert.nombre}</strong> - {cert.institucion}
+                                            <strong>{cert.nombre}</strong> - {cert.organizacionEmisora}
                                         </li>
                                     ))}
                                 </ul>
@@ -851,15 +855,16 @@ const CompanyHome = () => {
                         </div>
 
                         {/* Experiencia Laboral */}
-                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
-                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Experiencia Laboral</h3>
-                            {selectedCV?.experienciaLaboral.length > 0 ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm h-40 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-blue-700 mb-2">Experiencia Laboral</h3>
+                            {selectedCV?.experienciaLaboral && selectedCV.experienciaLaboral.length > 0 ? (
                                 <ul className="list-none space-y-2">
                                     {selectedCV.experienciaLaboral.map((exp, index) => (
                                         <li key={index} className="text-gray-600">
                                             <strong>{exp.titulo}</strong> - {exp.empresa}
                                             <br/>
-                                            <span className="text-sm text-gray-500">{exp.fechaInicio} - {exp.fechaFin}</span>
+                                            <span
+                                                className="text-sm text-gray-500">{exp.fechaInicio} - {exp.fechaFin}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -869,13 +874,13 @@ const CompanyHome = () => {
                         </div>
 
                         {/* Idiomas */}
-                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
-                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Idiomas</h3>
-                            {selectedCV?.idiomas.length > 0 ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm h-40 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-blue-700 mb-2">Idiomas</h3>
+                            {selectedCV?.idiomas && selectedCV.idiomas.length > 0 ? (
                                 <ul className="list-none space-y-2">
                                     {selectedCV.idiomas.map((idioma, index) => (
                                         <li key={index} className="text-gray-600">
-                                            {idioma.nombre} - Nivel: {idioma.nivel}
+                                            {idioma.nombre} - Nivel: {idioma.nivelDominio}
                                         </li>
                                     ))}
                                 </ul>
@@ -885,13 +890,13 @@ const CompanyHome = () => {
                         </div>
 
                         {/* Habilidades */}
-                        <div className="bg-white p-6 border border-gray-200 rounded-lg">
-                            <h3 className="text-xl font-semibold text-blue-700 mb-3">Habilidades</h3>
-                            {selectedCV?.skills.length > 0 ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm h-40 overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-blue-700 mb-2">Habilidades</h3>
+                            {selectedCV?.skills && selectedCV.skills.length > 0 ? (
                                 <ul className="list-none space-y-2">
                                     {selectedCV.skills.map((skill, index) => (
                                         <li key={index} className="text-gray-600">
-                                            {skill.nombre} - Nivel: {skill.nivel}
+                                            {skill.nombre} - Nivel: {skill.nivelDominio}
                                         </li>
                                     ))}
                                 </ul>
@@ -902,20 +907,15 @@ const CompanyHome = () => {
                     </div>
 
                     {/* Botón de cerrar */}
-                    <div className="mt-8 text-right">
+                    <div className="mt-6 text-right">
                         <button
                             onClick={closeModal}
-                            className="bg-blue-700 text-white py-2 px-6 rounded-lg hover:bg-blue-800 transition-all"
+                            className="bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-800 transition duration-300"
                         >
                             Cerrar
                         </button>
                     </div>
                 </Modal>
-
-
-
-
-
 
 
             </main>

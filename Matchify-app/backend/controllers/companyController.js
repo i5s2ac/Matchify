@@ -4,12 +4,12 @@ import { registerCompanyWithUser, getCompanyByIdService } from '../services/comp
 // Método para registrar una empresa y usuario
 export const registerCompany = async (req, res) => {
     const {
-        username, email, password, phone,
+        username, email, password, telefono,
         companyName, direccion, descripcion, sitioWeb, industriaId
     } = req.body;
 
-    const userData = { username, email, password, phone };
-    const companyData = { nombre: companyName, direccion, telefono: phone, email, descripcion, sitioWeb, industriaId };
+    const userData = { username, email, password, telefono };
+    const companyData = { nombre: companyName, direccion, telefono, email, descripcion, sitioWeb, industriaId };
 
     try {
         const { empresa, user } = await registerCompanyWithUser(companyData, userData);

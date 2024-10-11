@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -252,179 +252,136 @@ const Home = ({ username }) => {
         setApplicationStatus(null); // Resetear estado al seleccionar un nuevo trabajo
     };
 
-    // Renderizar detalles de la oferta seleccionada
-    const renderOfferDetails = () => (
-        <div className="bg-white p-6 max-w-8xl mx-auto">
-            {/* Secciones de detalles */}
-            <div className="space-y-6">
-                {/* Descripción */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Descripción del Trabajo
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.descripcion || 'No especificada'}</p>
-                </div>
-
-                {/* Funciones esperadas */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Funciones Esperadas
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.Funciones_Requerimiento || 'No especificadas'}</p>
-                </div>
-
-                {/* Estudios esperados */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <AcademicCapIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Estudios Requeridos
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.Estudios_Requerimiento || 'No especificados'}</p>
-                </div>
-
-                {/* Conocimientos esperados */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <LightBulbIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Conocimientos Requeridos
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.Conocimientos_Requerimiento || 'No especificados'}</p>
-                </div>
-
-                {/* Competencias esperadas */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <StarIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Competencias Requeridas
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.Competencias_Requerimiento || 'No especificadas'}</p>
-                </div>
-            </div>
+    const DetailSection = ({ icon: Icon, title, content }) => (
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-md transition-all hover:shadow-lg hover:bg-gray-100">
+            <h3 className="text-xl font-semibold text-gray-800 flex items-center mb-3">
+                <Icon className="h-8 w-8 text-blue-600 mr-2" />
+                {title}
+            </h3>
+            {content ? (
+                Array.isArray(content) ? (
+                    <ul className="list-disc list-inside text-gray-700 text-base space-y-2 ml-4">
+                        {content.map((item, index) => (
+                            <li key={index} className="leading-relaxed">{item.trim()}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line">{content}</p>
+                )
+            ) : (
+                <p className="text-gray-500 text-base">No especificado</p>
+            )}
         </div>
     );
 
+    const renderOfferDetails = () => (
+        <div className=" p-2 max-w-8xl min-h-[730px] overflow-y-auto">
+            <div className="space-y-6">
+                <DetailSection
+                    icon={ClipboardDocumentListIcon}
+                    title="Descripción del Trabajo"
+                    content={selectedJob.descripcion}
+                />
+                <DetailSection
+                    icon={ClipboardDocumentListIcon}
+                    title="Funciones Esperadas"
+                    content={selectedJob.Funciones_Requerimiento ? selectedJob.Funciones_Requerimiento.split('\n') : null}
+                />
+                <DetailSection
+                    icon={AcademicCapIcon}
+                    title="Estudios Requeridos"
+                    content={selectedJob.Estudios_Requerimiento ? selectedJob.Estudios_Requerimiento.split('\n') : null}
+                />
+                <DetailSection
+                    icon={LightBulbIcon}
+                    title="Conocimientos Requeridos"
+                    content={selectedJob.Conocimientos_Requerimiento ? selectedJob.Conocimientos_Requerimiento.split('\n') : null}
+                />
+                <DetailSection
+                    icon={StarIcon}
+                    title="Competencias Requeridas"
+                    content={selectedJob.Competencias_Requerimiento ? selectedJob.Competencias_Requerimiento.split('\n') : null}
+                />
+            </div>
+        </div>
+    );
 
     const renderCompanyDetails = () => (
-        <div className="bg-white p-6 max-w-8xl mx-auto">
-
-            {/* Detalles de la empresa */}
+        <div className="p-2 max-w-8xl min-h-[730px] overflow-y-auto">
             <div className="space-y-6">
-                {/* Descripción */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <InformationCircleIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Descripción de la Empresa
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.descripcion || 'No especificada'}</p>
-                </div>
-
-                {/* Dirección */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <MapPinIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Dirección
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.direccion || 'No especificada'}</p>
-                </div>
-
-                {/* Teléfono */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <PhoneIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Teléfono
-                    </h3>
-                    <p className="text-gray-600 text-lg">{selectedJob.empresa?.telefono || 'No especificado'}</p>
-                </div>
-
-                {/* Sitio Web */}
-                <div>
-                    <h3 className="text-xl font-semibold text-gray-700 flex items-center mb-2">
-                        <GlobeAltIcon className="h-8 w-8 text-blue-500 mr-2" />
-                        Sitio Web
-                    </h3>
-                    <p className="text-gray-600 text-lg">
-                        {selectedJob.empresa?.sitioWeb ? (
-                            <a href={selectedJob.empresa?.sitioWeb} target="_blank" rel="noopener noreferrer"
-                               className="text-blue-600 hover:underline">
+                <DetailSection
+                    icon={InformationCircleIcon}
+                    title="Descripción de la Empresa"
+                    content={selectedJob.empresa?.descripcion}
+                />
+                <DetailSection
+                    icon={MapPinIcon}
+                    title="Dirección"
+                    content={selectedJob.empresa?.direccion}
+                />
+                <DetailSection
+                    icon={PhoneIcon}
+                    title="Teléfono"
+                    content={selectedJob.empresa?.telefono}
+                />
+                <DetailSection
+                    icon={GlobeAltIcon}
+                    title="Sitio Web"
+                    content={
+                        selectedJob.empresa?.sitioWeb ? (
+                            <a
+                                href={selectedJob.empresa?.sitioWeb}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                            >
                                 {selectedJob.empresa.sitioWeb}
                             </a>
-                        ) : 'No especificado'}
-                    </p>
-                </div>
+                        ) : null
+                    }
+                />
             </div>
-
         </div>
     );
+
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
             <main className="flex-grow p-6">
 
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-
-                    <div
-                        className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
-                        <div className="flex items-center space-x-6 mb-4">
-                            <img
-                                src="/images/Profile.jpg"
-                                alt="Profile"
-                                className="h-14 w-14 rounded-full border-2 border-gray-200 object-cover"
-                            />
-                            <div>
-                                <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {userData?.username}!</h1>
-                                <p className="text-md text-gray-500 ">Estamos listos para ayudarte a encontrar tu
-                                    próximo reto</p>
-                            </div>
-                        </div>
-
-                        <div className="mt-6">
-
-
-                            {/* Barra de progreso */}
-                            <div className="mt-6">
-                                <p className="text-sm font-medium text-gray-500">Progreso de tu perfil</p>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                                    <div className="bg-blue-600 h-2.5 rounded-full" style={{width: '75%'}}></div>
-                                    {/* Puedes ajustar el porcentaje */}
-                                </div>
-                            </div>
-
-                            {/* Cita motivacional */}
-                            <div className="mt-6">
-                                <blockquote className="italic text-gray-500">"El éxito no se mide por lo que logras,
-                                    sino por los obstáculos que superas."
-                                </blockquote>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 flex space-x-4">
-                            <button
-                                onClick={() => alert("Editar Perfil")}
-                                className="bg-blue-600 flex-1 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                Editar Perfil
-                            </button>
-
-                            <button
-                                onClick={() => alert("Cerrar Sesión")}
-                                className="bg-red-600 flex-1 text-white px-5 py-3 rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            >
-                                Cerrar Sesión
-                            </button>
+                <div
+                    className="flex justify-between items-center mb-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div className="flex items-center space-x-4">
+                        <img
+                            src="/images/Profile.jpg"  // Ruta de la imagen de perfil
+                            alt="Profile Picture"
+                            className="h-16 w-16 rounded-full border-2 border-blue-500 object-cover shadow-sm"
+                        />
+                        <div>
+                            <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {userData?.username}!</h1>
+                            <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu
+                                próximo reto</p>
                         </div>
                     </div>
+                    <div>
+                        <Link to={`/editprofile/${userId}`}>
+                            <button
+                                className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                Editar Perfil
+                            </button>
+                        </Link>
+                    </div>
+                </div>
 
-
-                    {/* Gráfica de barras */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                    {/* Tarjeta de Estado de Solicitudes */}
                     <div
-                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
-                        {/* Título */}
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-blue-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
                         <div>
                             <div className="flex items-center space-x-4 mb-4">
-                                <div className="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center">
+                                <div
+                                    className="bg-blue-500 rounded-full h-12 w-12 flex items-center justify-center shadow-md">
                                     <span className="text-white text-xl font-bold">ES</span>
                                 </div>
                                 <div>
@@ -434,7 +391,7 @@ const Home = ({ username }) => {
                             </div>
 
                             {/* Gráfico de barras */}
-                            <div className="my-12">
+                            <div className="my-2">
                                 <Bar data={data} options={options}/>
                             </div>
                         </div>
@@ -448,188 +405,186 @@ const Home = ({ username }) => {
                         </button>
                     </div>
 
-                    <div className="grid grid-rows-1 sm:grid-rows-2 gap-6 ">
-
-                        {/* Tarjeta de Revisar CV */}
-                        <div
-                            className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
-                            <div>
-                                <div className="flex items-center space-x-4 mb-4">
-                                    <div
-                                        className="bg-indigo-500 rounded-full h-12 w-12 flex items-center justify-center">
-                                        <span className="text-white text-xl font-bold">CV</span>
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-semibold text-gray-800">Revisa tu CV</h2>
-                                        <p className="text-gray-500">Asegúrate de que tu CV esté actualizado.</p>
-                                    </div>
+                    {/* Tarjeta de Revisar CV */}
+                    <div
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-indigo-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
+                        <div>
+                            <div className="flex items-center space-x-4 mb-4">
+                                <div
+                                    className="bg-indigo-500 rounded-full h-12 w-12 flex items-center justify-center shadow-md">
+                                    <span className="text-white text-xl font-bold">CV</span>
                                 </div>
-
-                                {/* Descripción */}
-                                <p className="text-gray-600 mb-6 text-lg">
-                                    Una revisión rápida de tu CV podría marcar la diferencia. Asegúrate de tener tus
-                                    habilidades
-                                    y experiencia bien destacadas.
-                                </p>
+                                <div>
+                                    <h2 className="text-xl font-semibold text-gray-800">Revisa tu CV</h2>
+                                    <p className="text-gray-500">Asegúrate de que tu CV esté actualizado.</p>
+                                </div>
                             </div>
 
-                            {/* Botón fijo */}
-                            <button
-                                onClick={() => navigate(`/CV/${userId}`)}
-                                className="bg-indigo-600 text-white w-full py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                Revisar CV
-                            </button>
+                            {/* Descripción */}
+                            <p className="text-gray-600 mb-6 text-lg">
+                                Una revisión rápida de tu CV podría marcar la diferencia. Asegúrate de tener tus
+                                habilidades y experiencia bien destacadas.
+                            </p>
                         </div>
 
-                        {/* Tarjeta de Consejo de Trabajo */}
-                        <div
-                            className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-300 relative flex flex-col justify-between">
-                            <div>
-                                <div className="flex items-center space-x-4 mb-4">
-                                    <div
-                                        className="bg-orange-500 rounded-full h-12 w-12 flex items-center justify-center">
-                                        <span className="text-white text-xl font-bold">Tip</span>
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-semibold text-gray-800">Consejo de Trabajo</h2>
-                                        <p className="text-gray-500">Aumenta tus oportunidades laborales</p>
-                                    </div>
-                                </div>
+                        {/* Botón fijo */}
+                        <button
+                            onClick={() => navigate(`/CV/${userId}`)}
+                            className="bg-indigo-600 text-white w-full py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            Revisar CV
+                        </button>
+                    </div>
 
-                                {/* Consejo */}
-                                <p className="text-gray-600 mb-6 text-lg">
-                                    "La clave para una entrevista exitosa es investigar la empresa. Conocer sus valores
-                                    y
-                                    metas
-                                    te ayudará a conectar mejor con los reclutadores."
-                                </p>
+                    {/* Tarjeta de Consejo de Trabajo */}
+                    <div
+                        className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 hover:shadow-2xl hover:border-orange-500 transition-all duration-300 relative flex flex-col justify-between transform hover:-translate-y-1">
+                        <div>
+                            <div className="flex items-center space-x-4 mb-4">
+                                <div
+                                    className="bg-orange-500 rounded-full h-12 w-12 flex items-center justify-center shadow-md">
+                                    <span className="text-white text-xl font-bold">Tip</span>
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-semibold text-gray-800">Consejo de Trabajo</h2>
+                                    <p className="text-gray-500">Aumenta tus oportunidades laborales</p>
+                                </div>
                             </div>
 
-                            {/* Botón fijo */}
-                            <button
-                                onClick={() => alert("Más tips")}
-                                className="bg-orange-600 text-white w-full py-3 rounded-lg hover:bg-orange-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                            >
-                                Ver más consejos
-                            </button>
+                            {/* Consejo */}
+                            <p className="text-gray-600 mb-6 text-lg">
+                                "La clave para una entrevista exitosa es investigar la empresa. Conocer sus valores y
+                                metas te ayudará a conectar mejor con los reclutadores."
+                            </p>
                         </div>
+
+                        {/* Botón fijo */}
+                        <button
+                            onClick={() => alert("Más tips")}
+                            className="bg-orange-600 text-white w-full py-3 rounded-lg hover:bg-orange-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        >
+                            Ver más consejos
+                        </button>
                     </div>
                 </div>
 
+                <h2 className="text-2xl font-semibold text-gray-800 mt-3 mb-3">Ofertas de
+                    Empleo</h2>
+                <p className="text-md text-gray-500 mb-7">Encuentra las ofertas de empleo creadas para ti. Recuerda que puedes filtrar por las diferentes categorías.</p>
+
                 {/* Filtros */}
 
-                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                        <div className="relative">
-                            <MagnifyingGlassIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                            />
+                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+
+                    {/* Input de Título */}
+                    <div className="relative group">
+                        <MagnifyingGlassIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200"/>
                         <input
                             type="text"
                             name="titulo"
                             placeholder="Buscar por Título de la Plaza"
                             value={filters.titulo}
                             onChange={handleFilterChange}
-                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                            className="w-full pl-12 pr-5 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 hover:border-blue-400"
                         />
-
                     </div>
 
-                        <div className="relative">
-                            <MagnifyingGlassIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                            />
+                    {/* Input de Ubicación */}
+                    <div className="relative group">
+                        <MagnifyingGlassIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-200"/>
                         <input
                             type="text"
                             name="ubicacion"
                             placeholder="Buscar por Ubicación"
                             value={filters.ubicacion}
                             onChange={handleFilterChange}
-                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
+                            className="w-full pl-12 pr-5 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 hover:border-blue-400"
                         />
-                        </div>
-
-                    <div className="relative">
-                            <CurrencyDollarIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                            />
-
-                            <select
-                                type="number"
-                                name="salario"
-                                placeholder="Filtrar por salario máximo"
-                                value={filters.salario}
-                                onChange={handleFilterChange}
-                                className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
-                            >
-                                <option value="">Filtrar por salario máximo</option>
-                                <option value="5000">Q5,000 o menos</option>
-                                <option value="10000">Q10,000 o menos</option>
-                                <option value="20000">Q20,000 o menos</option>
-                                <option value="100000">Q100,000 o menos</option>
-                                <option value="500000">Q500,000 o menos</option>
-                            </select>
-                        </div>
                     </div>
 
-                    <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                        <div className="relative">
-                            <BriefcaseIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                </div>
+
+                <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+
+                    {/* Select de Salario */}
+                    <div className="relative group">
+                        <CurrencyDollarIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200"/>
+                        <select
+                            name="salario"
+                            value={filters.salario}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 hover:border-indigo-400"
+                        >
+                            <option value="">Filtrar por salario máximo</option>
+                            <option value="5000">Q5,000 o menos</option>
+                            <option value="10000">Q10,000 o menos</option>
+                            <option value="20000">Q20,000 o menos</option>
+                            <option value="100000">Q100,000 o menos</option>
+                            <option value="500000">Q500,000 o menos</option>
+                        </select>
+                    </div>
+
+                    {/* Select de Tipo de Trabajo */}
+                    <div className="relative group">
+                        <BriefcaseIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200"/>
                         <select
                             name="tipoTrabajo"
                             value={filters.tipoTrabajo}
                             onChange={handleFilterChange}
-                            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 hover:border-indigo-400"
                         >
                             <option value="">Filtrar por tipo de trabajo</option>
                             <option value="Tiempo Completo">Tiempo Completo</option>
                             <option value="Tiempo Parcial">Tiempo Parcial</option>
                             <option value="Por Proyecto">Por Proyecto</option>
                         </select>
+                    </div>
 
-                        </div>
-
-                        <div className="relative">
-                            <BriefcaseIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                    {/* Select de Modalidad */}
+                    <div className="relative group">
+                        <BriefcaseIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200"/>
                         <select
                             name="modalidad"
                             value={filters.modalidad}
                             onChange={handleFilterChange}
-                            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 hover:border-indigo-400"
                         >
                             <option value="">Filtrar por modalidad</option>
                             <option value="Presencial">Presencial</option>
-                            <option value="Remoto">Remoto</option>
+                            <option value="Virtual">Virtual</option>
                             <option value="Híbrido">Híbrido</option>
                         </select>
-
-                        </div>
-                        <div className="relative">
-
-                            <CalendarIcon
-                                className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-                            />
-                            <select
-                                name="fecha"
-                                value={filters.fecha}
-                                onChange={handleFilterChange}
-                                className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-300 focus:border-indigo-300 transition-all duration-300 ease-in-out hover:border-indigo-500"
-                            >
-                                <option value="">Filtrar por fecha</option>
-                                <option value="7">Últimos 7 días</option>
-                                <option value="30">Últimos 30 días</option>
-                                <option value="over30">Más de 30 días</option>
-                            </select>
-                        </div>
                     </div>
 
+                    {/* Select de Fecha */}
+                    <div className="relative group">
+                        <CalendarIcon
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200"/>
+                        <select
+                            name="fecha"
+                            value={filters.fecha}
+                            onChange={handleFilterChange}
+                            className="w-full pl-12 pr-5 py-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 hover:border-indigo-400"
+                        >
+                            <option value="">Filtrar por fecha</option>
+                            <option value="7">Últimos 7 días</option>
+                            <option value="30">Últimos 30 días</option>
+                            <option value="over30">Más de 30 días</option>
+                        </select>
+                    </div>
+                </div>
 
-                    {/* Sección para mostrar todas las ofertas activas */}
+
+                {/* Sección para mostrar todas las ofertas activas */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                    <div className="bg-white rounded-lg max-h-[730px] overflow-y-auto">
+
+                    <div className="bg-white rounded-lg max-h-[1390px] overflow-y-auto">
                         <div className="space-y-6">
                             {filteredJobs.length > 0 ? (
                                 filteredJobs.map((job) => (
@@ -691,114 +646,115 @@ const Home = ({ username }) => {
                         </div>
                     </div>
 
-                        {selectedJob && (
-                            <div
-                                className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-xl border border-gray-200 p-6 relative">
-                                <div className="flex items-center mb-4">
-                                    <div
-                                        className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
+                    {selectedJob && (
+
+                        <div
+                            className="col-span-1 md:col-span-2 bg-white rounded-lg shadow-xl border border-gray-200 p-6 relative">
+                            <div className="flex items-center mb-4">
+                                <div
+                                    className="mt-4 bg-purple-600 rounded-md h-12 w-12 flex items-center justify-center">
                                         <span
                                             className="text-lg font-bold text-white">{selectedJob.titulo.charAt(0)}</span>
-                                    </div>
-
-                                    <h2 className="ml-4 mt-4 text-3xl font-bold text-gray-800">{selectedJob.titulo}</h2>
-
                                 </div>
 
-                                <div>
-                                    <div className="flex items-center space-x-2 text-gray-500">
-                                        <BuildingOfficeIcon className="h-5 w-5"/>
-                                        <span>{selectedJob.empresa?.nombre || 'Empresa no especificada'}</span>
-                                        <MapPinIcon className="h-5 w-5"/>
-                                        <span>{selectedJob.ubicacion || 'Ubicación no especificada'}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-2 mt-3 text-gray-500">
-
-                                        <CalendarIcon className="h-5 w-5"/>
-                                        <span>{selectedJob.fechaCierre ? `Fecha de cierre: ${selectedJob.fechaCierre}` : 'Sin fecha de cierre'}</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex py-6 space-x-4">
-                                    <div className="px-6 py-4 bg-green-100 text-green-800 text-center rounded-2xl">
-                                        <div className="text-sm">Salario</div>
-                                        <div className="text-2xl font-bold">Q{selectedJob.salario} <span
-                                            className="text-base font-normal">/Mes</span></div>
-                                    </div>
-                                    <div className="px-6 py-4 bg-blue-100 text-blue-800 text-center rounded-2xl">
-                                        <div className="text-sm">Tipo de Empleo</div>
-                                        <div
-                                            className="text-2xl font-bold">{selectedJob.tipoTrabajo || 'No especificado'}</div>
-                                    </div>
-                                    <div className="px-6 py-4 bg-orange-100 text-orange-800 text-center rounded-2xl">
-                                        <div className="text-sm">Modalidad</div>
-                                        <div
-                                            className="text-2xl font-bold">{selectedJob.modalidad || 'No especificada'}</div>
-                                    </div>
-                                </div>
-
-                                <div className="mb-6 border-b border-gray-200">
-                                    <nav className="-mb-px flex space-x-8">
-                                        <button
-                                            onClick={() => setActiveTab('oferta')}
-                                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
-                                                activeTab === 'oferta'
-                                                    ? 'border-blue-600 text-blue-600'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                            }`}
-                                        >
-                                            Información de la oferta
-                                        </button>
-                                        <button
-                                            onClick={() => setActiveTab('empresa')}
-                                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
-                                                activeTab === 'empresa'
-                                                    ? 'border-blue-600 text-blue-600'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                            }`}
-                                        >
-                                            Información de la empresa
-                                        </button>
-                                    </nav>
-                                </div>
-
-                                {/* Mostrar detalles de la oferta o empresa */}
-                                {activeTab === 'oferta' ? renderOfferDetails() : renderCompanyDetails()}
-
-                                {/* Botón fijo para aplicar o ver el estado de la aplicación */}
-                                <div className="absolute bottom-6 left-6 right-6">
-                                    {applicationStatus && applicationStatus.estado ? (
-                                        <button
-                                            className={`w-full px-6 py-4 rounded-lg text-white ${
-                                                applicationStatus.estado === 'pendiente'
-                                                    ? 'bg-yellow-500'
-                                                    : applicationStatus.estado === 'aceptada'
-                                                        ? 'bg-green-500'
-                                                        : 'bg-red-500'
-                                            } cursor-not-allowed`}
-                                            disabled
-                                        >
-                                            {`Estado de aplicación: ${
-                                                applicationStatus.estado === 'pendiente'
-                                                    ? 'Solicitud Pendiente'
-                                                    : applicationStatus.estado === 'aceptada'
-                                                        ? 'Solicitud Aceptada'
-                                                        : 'Solicitud Rechazada'
-                                            }`}
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
-                                            onClick={() => applyToJob(selectedJob.id)}
-                                        >
-                                            Aplicar a esta oferta
-                                        </button>
-                                    )}
-                                </div>
-
+                                <h2 className="ml-4 mt-4 text-3xl font-bold text-gray-800">{selectedJob.titulo}</h2>
 
                             </div>
-                        )}
+
+                            <div>
+                                <div className="flex items-center space-x-2 text-gray-500">
+                                    <BuildingOfficeIcon className="h-5 w-5"/>
+                                    <span>{selectedJob.empresa?.nombre || 'Empresa no especificada'}</span>
+                                    <MapPinIcon className="h-5 w-5"/>
+                                    <span>{selectedJob.ubicacion || 'Ubicación no especificada'}</span>
+                                </div>
+                                <div className="flex items-center space-x-2 mt-3 text-gray-500">
+
+                                    <CalendarIcon className="h-5 w-5"/>
+                                    <span>{selectedJob.fechaCierre ? `Fecha de cierre: ${selectedJob.fechaCierre}` : 'Sin fecha de cierre'}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex py-6 space-x-4">
+                                <div className="px-6 py-4 bg-green-100 text-green-800 text-center rounded-2xl">
+                                    <div className="text-sm">Salario</div>
+                                    <div className="text-2xl font-bold">Q{selectedJob.salario} <span
+                                        className="text-base font-normal">/Mes</span></div>
+                                </div>
+                                <div className="px-6 py-4 bg-blue-100 text-blue-800 text-center rounded-2xl">
+                                    <div className="text-sm">Tipo de Empleo</div>
+                                    <div
+                                        className="text-2xl font-bold">{selectedJob.tipoTrabajo || 'No especificado'}</div>
+                                </div>
+                                <div className="px-6 py-4 bg-orange-100 text-orange-800 text-center rounded-2xl">
+                                    <div className="text-sm">Modalidad</div>
+                                    <div
+                                        className="text-2xl font-bold">{selectedJob.modalidad || 'No especificada'}</div>
+                                </div>
+                            </div>
+
+                            <div className="mb-6 border-b border-gray-200">
+                                <nav className="-mb-px flex space-x-8">
+                                    <button
+                                        onClick={() => setActiveTab('oferta')}
+                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
+                                            activeTab === 'oferta'
+                                                ? 'border-blue-600 text-blue-600'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        Información de la oferta
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('empresa')}
+                                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md ${
+                                            activeTab === 'empresa'
+                                                ? 'border-blue-600 text-blue-600'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        }`}
+                                    >
+                                        Información de la empresa
+                                    </button>
+                                </nav>
+                            </div>
+
+                            {/* Mostrar detalles de la oferta o empresa */}
+                            {activeTab === 'oferta' ? renderOfferDetails() : renderCompanyDetails()}
+
+                            {/* Botón fijo para aplicar o ver el estado de la aplicación */}
+                            <div className="absolute bottom-6 left-6 right-6">
+                                {applicationStatus && applicationStatus.estado ? (
+                                    <button
+                                        className={`w-full px-6 py-4 rounded-lg text-white ${
+                                            applicationStatus.estado === 'pendiente'
+                                                ? 'bg-yellow-500'
+                                                : applicationStatus.estado === 'aceptada'
+                                                    ? 'bg-green-500'
+                                                    : 'bg-red-500'
+                                        } cursor-not-allowed`}
+                                        disabled
+                                    >
+                                        {`Estado de aplicación: ${
+                                            applicationStatus.estado === 'pendiente'
+                                                ? 'Solicitud Pendiente'
+                                                : applicationStatus.estado === 'aceptada'
+                                                    ? 'Solicitud Aceptada'
+                                                    : 'Solicitud Rechazada'
+                                        }`}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
+                                        onClick={() => applyToJob(selectedJob.id)}
+                                    >
+                                        Aplicar a esta oferta
+                                    </button>
+                                )}
+                            </div>
+
+
+                        </div>
+                    )}
 
                 </div>
 

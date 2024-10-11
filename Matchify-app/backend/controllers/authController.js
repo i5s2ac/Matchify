@@ -12,9 +12,9 @@ export const login = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-    const { username, email, password, phone } = req.body;
+    const { username, email, password, telefono } = req.body;
     try {
-        const user = await registerUser({ username, email, password, phone });
+        const user = await registerUser({ username, email, password, telefono });
         return res.status(201).json({ success: true, user });
     } catch (error) {
         return res.status(400).json({ success: false, message: error.message });

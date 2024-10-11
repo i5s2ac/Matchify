@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { FaArrowLeft, FaPlus, FaTrashAlt, FaPen, FaSave, FaGraduationCap, FaBriefcase, FaCertificate, FaLanguage, FaTools  } from 'react-icons/fa';
+import {ArrowLeftIcon} from "@heroicons/react/24/solid";
 
 const CVForm = () => {
     const {userId} = useParams();
@@ -137,13 +138,15 @@ const CVForm = () => {
 
     return (
         <div className="max-w-8xl mx-auto p-8 rounded-lg shadow-lg space-y-8">
-            <button
-                onClick={handleBack}
-                className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg flex items-center transition duration-300 ease-in-out shadow-md">
-                <FaArrowLeft className="mr-2"/> Volver
-            </button>
+            <div className="flex items-center mb-6">
+                <ArrowLeftIcon
+                    className="h-6 w-6 text-gray-700 cursor-pointer hover:text-primary transition"
+                    onClick={() => navigate(-1)} // Utiliza navigate para ir a la página anterior
+                />
+                <h2 className="text-2xl font-semibold text-gray-800 ml-4 py-2">Regresar</h2>
+            </div>
 
-            <h1 className="text-4xl font-bold text-center text-gray-900 mb-6">
+            <h1 className="text-3xl font-bold text-center text-gray-900 mb-6">
                 {isEditing ? 'Editar CV' : 'Crear CV'}
             </h1>
 
@@ -151,9 +154,7 @@ const CVForm = () => {
 
                 {/* Sección de Educación */}
                 <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-600">
-                    <h2 className="text-2xl font-semibold mb-4 text-blue-600 flex items-center">
-                        <FaGraduationCap className="mr-2"/> Educación
-                    </h2>
+
                     {cv.educacion.map((edu, index) => (
                         <div key={index}
                              className="mb-4 p-4 border border-gray-200 rounded-lg transition duration-300 ease-in-out">

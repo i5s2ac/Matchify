@@ -286,7 +286,7 @@ export default function CreateOfferPage() {
                             required
                         >
                             <option value="Presencial">Presencial</option>
-                            <option value="Hibrido">Híbrido</option>
+                            <option value="Virtual">Virtual</option>
                             <option value="Remoto">Remoto</option>
                         </select>
                     </div>

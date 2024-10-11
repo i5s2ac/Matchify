@@ -2,25 +2,25 @@
 FROM node:18
 
 # Establece el directorio de trabajo
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Copia y cachea las dependencias de Node.js
 COPY package*.json ./
+
+# Instala las dependencias
 RUN npm install
 
 # Copia el resto del código fuente
 COPY . .
 
-# Instala nodemon como dependencia de desarrollo
-RUN npm install -g nodemon
-
-# Configura el entorno de desarrollo y la observación de archivos
-ENV NODE_ENV=development
-ENV CHOKIDAR_USEPOLLING=true
-
 # Expone el puerto que usará la aplicación
 EXPOSE 3000
 
-# Comando para iniciar la aplicación en desarrollo con nodemon
-CMD ["npm", "start"]
+# Configura las variables de entorno
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
+# Comando para iniciar la aplicación en desarrollo
+CMD ["npm", "start"]

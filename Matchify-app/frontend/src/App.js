@@ -10,7 +10,8 @@ import CreateOfferPage from './pages/CreateOffer';
 import EditOfferPage from './pages/EditOfferPage';
 import './styles/index.css';
 import Navbar from './components/navbar';
-import CV from './pages/cv'
+import CV from './pages/cv';
+import ProfileEditPage from './pages/ProfileEdit';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/home/:userId/:empresaId/:rolId/create_offer" element={<CreateOfferPage />} />
                 <Route path="/home/:userId/:empresaId/:rolId/edit_offer/:offerId" element={<EditOfferPage />} />
                 <Route path="/CV/:userId" element={<CV />} />
+                <Route path="/editprofile/:userId" element={<ProfileEditPage />} />
             </Routes>
         </Router>
     );
