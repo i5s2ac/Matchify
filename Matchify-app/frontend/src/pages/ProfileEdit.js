@@ -57,7 +57,7 @@ const ProfileEditPage = () => {
                 timer: 1500
             });
             setTimeout(() => {
-                navigate(`/home/${userId}`);
+                navigate(-1);
             }, 1500); // Redirige después de 1.5 segundos
         } catch (error) {
             console.error('Error al actualizar el perfil:', error);

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { PencilIcon, UserIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, UserIcon,EyeIcon, CheckIcon, XMarkIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');  // O el ID de tu div principal
@@ -287,8 +287,9 @@ const CompanyHome = () => {
                         <img
                             src="/images/Profile.jpg"
                             alt="Profile Picture"
-                            className="h-16 w-16 rounded-full border-2 border-blue-500 object-cover shadow-md"
+                            className="h-16 w-16 rounded-full border-2 border-blue-500 object-cover shadow-md mr-4"
                         />
+
                         <div>
                             <h1 className="text-2xl font-semibold text-gray-900">¡Hola, {userData?.username}!</h1>
                             <p className="text-md text-gray-500 mt-1">Estamos listos para ayudarte a encontrar tu
@@ -699,26 +700,27 @@ const CompanyHome = () => {
                                                     </td>
                                                     <td className="py-3 px-6 flex space-x-2">
                                                         <button
-                                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                                            className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 flex items-center"
                                                             onClick={() => openModal(candidato.candidato.id, candidato.candidato.username)}  // Pasa el ID y el username
                                                         >
-                                                            Ver CV
+                                                            <EyeIcon className="h-5 w-5 mr-1"/> Revisar
                                                         </button>
 
-
                                                         <button
-                                                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                                                            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center"
                                                             onClick={() => handleUpdateCandidato(candidato.id, 'aceptada')}
                                                         >
-                                                            Aceptar
+                                                            <CheckIcon className="h-5 w-5 mr-1"/> Aceptar
                                                         </button>
+
                                                         <button
-                                                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                                                            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center"
                                                             onClick={() => handleUpdateCandidato(candidato.id, 'rechazada')}
                                                         >
-                                                            Rechazar
+                                                            <XMarkIcon className="h-5 w-5 mr-1"/> Declinar
                                                         </button>
                                                     </td>
+
                                                 </tr>
                                             ))}
                                             </tbody>
@@ -812,9 +814,16 @@ const CompanyHome = () => {
                     </div>
 
                     {/* Información general */}
-                    <div className="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm">
-                        <h3 className="text-xl font-semibold text-blue-700 mb-2">Información General</h3>
-                        <p className="text-gray-700"><strong>Nombre:</strong> {selectedCV?.username || 'N/A'}</p>
+                    <div className="mb-8 p-4 bg-gray-50 rounded-lg shadow-sm flex items-center">
+                        <img
+                            src="/images/Profile.jpg"
+                            alt="Profile Picture"
+                            className="h-16 w-16 rounded-full border-2 border-blue-500 object-cover shadow-md mr-4"
+                        />
+                        <div>
+                            <h3 className="text-xl font-semibold text-blue-700 mb-2">Información General</h3>
+                            <p className="text-gray-700"><strong>Nombre:</strong> {selectedCV?.username || 'N/A'}</p>
+                        </div>
                     </div>
 
                     {/* Secciones con scroll y tamaño fijo */}
@@ -904,16 +913,6 @@ const CompanyHome = () => {
                                 <p className="text-gray-500">No hay datos de habilidades.</p>
                             )}
                         </div>
-                    </div>
-
-                    {/* Botón de cerrar */}
-                    <div className="mt-6 text-right">
-                        <button
-                            onClick={closeModal}
-                            className="bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-800 transition duration-300"
-                        >
-                            Cerrar
-                        </button>
                     </div>
                 </Modal>
 

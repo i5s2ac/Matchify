@@ -584,7 +584,7 @@ const Home = ({ username }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
 
-                    <div className="bg-white rounded-lg max-h-[1390px] overflow-y-auto">
+                    <div className="bg-white rounded-lg max-h-[1090px] overflow-y-auto">
                         <div className="space-y-6">
                             {filteredJobs.length > 0 ? (
                                 filteredJobs.map((job) => (
