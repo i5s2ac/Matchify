@@ -24,14 +24,14 @@ body {
 
 /* Ajuste de margen cuando la navbar está visible y expandida */
 .main-content-expanded {
-    margin-left: 18rem; /* Ancho de la navbar expandida */
+    margin-left: 16rem; /* Ancho de la navbar expandida */
     padding: 0rem;
     transition: margin-left 0.3s ease;
 }
 
 /* Ajuste de margen cuando la navbar está colapsada */
 .main-content-collapsed {
-    margin-left: 6rem; /* Ancho de la navbar colapsada */
+    margin-left: 4rem; /* Ancho de la navbar colapsada */
     padding: 2rem;
     transition: margin-left 0.3s ease;
 }

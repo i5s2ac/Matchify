@@ -154,9 +154,7 @@ const CVForm = () => {
 
                 {/* Sección de Educación */}
                 <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-600">
-                    <h2 className="text-2xl font-semibold mb-4 text-blue-600 flex items-center">
-                        <FaGraduationCap className="mr-2"/> Educación {/* Aquí se agrega el ícono */}
-                    </h2>
+                    <h2 className="text-2xl font-semibold mb-4 text-blue-600">Educación</h2>
 
                     {cv.educacion.map((edu, index) => (
                         <div key={index}

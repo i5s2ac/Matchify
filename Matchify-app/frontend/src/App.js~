@@ -20,18 +20,10 @@ function App() {
     const location = useLocation();
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUserId = localStorage.getItem('userId');
-        const storedEmpresaId = localStorage.getItem('empresaId');
-        const storedRolId = localStorage.getItem('rolId');
-
-        if (storedToken) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
             setIsAuthenticated(true);
-            setUser({
-                userId: storedUserId,
-                empresaId: storedEmpresaId,
-                rolId: storedRolId,
-            });
+            setUser(JSON.parse(storedUser));
         }
     }, []);
 

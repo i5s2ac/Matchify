@@ -22,8 +22,7 @@ const Navbar = ({ userId, setIsAuthenticated, setUser, isCollapsed, setIsCollaps
             }
         };
         fetchUser();
-    }, [userId]);
-
+    }, [userId]); // Ejecutar cuando el ID cambie
 
     const handleDashboardClick = () => {
         if (empresaId && rolId) {

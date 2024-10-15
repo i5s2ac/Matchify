@@ -16,31 +16,30 @@ const Login = ({ setIsAuthenticated }) => {
                 email,
                 password,
             });
+            // Manejar la respuesta de éxito
             console.log('Inicio de sesión exitoso:', response.data);
             const { userId, token, empresaId, rolId } = response.data;
 
-            // Almacena el token y userId en localStorage
+            // Almacena el token en localStorage
             localStorage.setItem('token', token);
             localStorage.setItem('userId', userId);
+            localStorage.setItem('empresaId', empresaId);
+            localStorage.setItem('rolId', rolId);
 
-            // Solo almacena empresaId y rolId si existen
-            if (empresaId) {
-                localStorage.setItem('empresaId', empresaId);
-            }
-            if (rolId) {
-                localStorage.setItem('rolId', rolId);
-            }
-
+            // Establece el estado de autenticación a verdadero
             setIsAuthenticated(true);
 
-            // Redirige a la página correspondiente
+            // Verifica si el usuario está relacionado a una empresa
             if (empresaId && rolId) {
+                // Redirige a la página de CompanyHome si el usuario está asociado a una empresa
                 navigate(`/home/${userId}/${empresaId}/${rolId}`);
             } else {
+                // Si no está asociado a una empresa, redirige al home normal del usuario
                 navigate(`/home/${userId}`);
             }
 
         } catch (error) {
+            // Manejo de errores
             if (error.response) {
                 setErrorMessage(error.response.data.message);
             } else {
