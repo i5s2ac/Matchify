@@ -41,7 +41,11 @@ const Navbar = ({
     const handleLogout = () => {
         setIsAuthenticated(false);
         setUser(null);
-        ['user', 'token', 'userId', 'empresaId', 'rolId'].forEach(localStorage.removeItem);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('empresaId');
+        localStorage.removeItem('rolId');
         navigate('/');
     };
 
@@ -54,7 +58,7 @@ const Navbar = ({
             {/* Botón de colapsar/expandir */}
             <button
                 className={`h-14 m-4 flex items-center justify-between rounded-lg 
-        bg-gray-700 hover:bg-gray-600 transition-all duration-300`}
+        bg-gray-900 hover:bg-gray-600 transition-all duration-300`}
                 aria-label="Toggle Navbar"
                 onClick={() => setIsCollapsed(prev => !prev)}
             >
@@ -73,7 +77,7 @@ const Navbar = ({
             </button>
 
             {/* Navegación principal */}
-            <nav className="flex-1 px-4 py-6">
+            <nav className="flex-1 px-4 ">
                 <ul className="space-y-4">
                     <NavItem
                         icon={<HomeIcon className="h-8 w-8"/>}
