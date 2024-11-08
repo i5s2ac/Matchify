@@ -335,7 +335,7 @@ const CVForm = () => {
                                 className="border-b w-full p-2 mb-3 focus:outline-none focus:border-purple-500 appearance-none"
                             >
                                 <option value="">Seleccione un nivel</option>
-                                <option value="básico">Básico</option>
+                                <option value="basico">Básico</option>
                                 <option value="intermedio">Intermedio</option>
                                 <option value="avanzado">Avanzado</option>
                                 <option value="experto">Experto</option>
@@ -376,7 +376,7 @@ const CVForm = () => {
                                 className="w-full p-2 mb-3 focus:outline-none appearance-none appearance-none"
                             >
                                 <option value="">Seleccione un nivel</option>
-                                <option value="básico">Básico</option>
+                                <option value="basico">Básico</option>
                                 <option value="intermedio">Intermedio</option>
                                 <option value="avanzado">Avanzado</option>
                                 <option value="experto">Experto</option>

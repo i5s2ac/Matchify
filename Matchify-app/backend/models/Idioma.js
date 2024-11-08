@@ -9,7 +9,7 @@ const Idioma = sequelize.define('Idioma', {
         allowNull: false,
     },
     nivelDominio: {
-        type: DataTypes.ENUM('básico', 'intermedio', 'avanzado', 'experto'),
+        type: DataTypes.ENUM('basico', 'intermedio', 'avanzado', 'experto'),
         allowNull: false,
     },
     usuarioId: {
