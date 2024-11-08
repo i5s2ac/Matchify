@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
       },
       nivelDominio: {
-        type: Sequelize.ENUM('básico', 'intermedio', 'avanzado', 'experto'),
+        type: Sequelize.ENUM('basico', 'intermedio', 'avanzado', 'experto'),
         allowNull: false,
       },
       descripcion: {
