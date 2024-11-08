@@ -1,3 +1,5 @@
+// backend/app.js
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -7,10 +9,10 @@ import userRoutes from './routes/userRoutes.js';
 import industryRoutes from './routes/industryRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import candidatoRoutes from './routes/candidatoRoutes.js';
-import cvRoutes from './routes/cvRoutes.js'
-
-import sequelize from './config/database.js'; // Importa la conexión a la base de datos
-import defineAssociations from './models/associations.js'; // Importa las asociaciones
+import cvRoutes from './routes/cvRoutes.js';
+import sequelize from './config/database.js';
+import defineAssociations from './models/associations.js';
+import { getClient } from './config/redisClient.js'; // Importar el cliente de Redis
 
 dotenv.config();
 
@@ -18,27 +20,49 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Definir las asociaciones entre los modelos
-defineAssociations();
+// Middleware para caché (opcional, si deseas usarlo globalmente)
+const cacheMiddleware = (duration) => {
+    return async (req, res, next) => {
+        const key = `__express__${req.originalUrl || req.url}`;
+        try {
+            const cachedData = await getClient().get(key);
+            if (cachedData) {
+                res.setHeader('Content-Type', 'application/json');
+                return res.send(JSON.parse(cachedData));
+            } else {
+                res.sendResponse = res.send;
+                res.send = async (body) => {
+                    await getClient().setEx(key, duration, JSON.stringify(body));
+                    res.sendResponse(body);
+                };
+                next();
+            }
+        } catch (err) {
+            console.error('Error en el middleware de caché:', err);
+            next();
+        }
+    };
+};
 
-// Rutas de autenticación
+// Rutas con caché implementada en los controladores
 app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
 app.use('/job', jobRoutes);
 app.use('/industry', industryRoutes);
 app.use('/company', companyRoutes);
 app.use('/candidatos', candidatoRoutes);
 app.use('/cv', cvRoutes);
-
+app.use('/user', userRoutes); // La ruta de usuarios ya tiene caché en su controlador
 
 // Endpoint "Hola Mundo"
 app.get('/', (req, res) => {
     res.send('Backend Corriendo');
 });
 
-// Sincronizar los modelos con la base de datos y luego iniciar el servidor
+// Define las asociaciones y sincroniza con la base de datos
+defineAssociations();
+
 const PORT = process.env.PORT || 3001;
-sequelize.sync({ alter: true }) // Esto ajusta las tablas si es necesario
+sequelize.sync({ alter: true })
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);

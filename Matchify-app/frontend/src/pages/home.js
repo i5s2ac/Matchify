@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {Link, useParams} from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -18,7 +18,11 @@ import {
     ClipboardDocumentListIcon,
     AcademicCapIcon,
     LightBulbIcon,
-    StarIcon, BuildingOfficeIcon, PhoneIcon, GlobeAltIcon, InformationCircleIcon
+    StarIcon,
+    BuildingOfficeIcon,
+    PhoneIcon,
+    GlobeAltIcon,
+    InformationCircleIcon
 } from '@heroicons/react/24/solid';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -35,28 +39,84 @@ const Home = ({ username }) => {
     const [filteredJobs, setFilteredJobs] = useState([]);
     const navigate = useNavigate();
 
-    const fetchActiveJobs = async () => {
+    // Referencias para evitar llamadas duplicadas
+    const hasFetchedActiveJobs = useRef(false);
+    const hasFetchedStats = useRef(false);
+    const hasFetchedUserData = useRef(false);
+
+    // Función para obtener la información del usuario
+    const fetchUserData = async () => {
+        console.log('Fetching user data...'); // Línea de depuración
         try {
+            const token = localStorage.getItem('token');  // Obtener el token almacenado
+            const response = await axios.get(`http://localhost:3001/user/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Enviar el token en los encabezados
+                },
+            });
+            setUserData(response.data.user);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            setError('Error al obtener los datos del usuario');
+        }
+    };
+
+    // Función para obtener las estadísticas de candidatos
+    const fetchStats = async () => {
+        console.log('Fetching stats...'); // Línea de depuración
+        try {
+            const response = await axios.get(`http://localhost:3001/candidatos/${userId}/application-counts`);
+            const counts = response.data.counts;
+            const formattedStats = {
+                aceptadas: counts.find(c => c.estado === 'aceptada')?.cantidad || 0,
+                rechazadas: counts.find(c => c.estado === 'rechazada')?.cantidad || 0,
+                pendientes: counts.find(c => c.estado === 'pendiente')?.cantidad || 0
+            };
+            setStats(formattedStats);
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            setError('Error al obtener las estadísticas');
+        }
+    };
+
+    // Función para obtener las ofertas de empleo activas
+    const fetchActiveJobs = async () => {
+        console.log('Fetching active jobs...'); // Línea de depuración
+        try {
+            // 1. Obtener las ofertas de trabajo activas
             const response = await axios.get(`http://localhost:3001/job/active`);
             const jobs = response.data.ofertas;
 
-            const jobsWithCompanyData = await Promise.all(
-                jobs.map(async (job) => {
-                    try {
-                        const companyResponse = await axios.get(`http://localhost:3001/company/${job.empresaId}`);
-                        return {
-                            ...job,
-                            empresa: companyResponse.data.empresa,
-                        };
-                    } catch (error) {
-                        console.error('Error fetching company data:', error);
-                        return {
-                            ...job,
-                            empresa: null,
-                        };
-                    }
-                })
-            );
+            // 2. Extraer los IDs únicos de empresas
+            const uniqueEmpresaIds = [...new Set(jobs.map(job => job.empresaId))];
+            console.log('Unique Empresa IDs:', uniqueEmpresaIds); // Depuración
+
+            // 3. Fetch todas las empresas únicas en paralelo
+            const companyPromises = uniqueEmpresaIds.map(async (empresaId) => {
+                try {
+                    const companyResponse = await axios.get(`http://localhost:3001/company/${empresaId}`);
+                    return { empresaId, empresa: companyResponse.data.empresa };
+                } catch (error) {
+                    console.error(`Error fetching company data for empresaId ${empresaId}:`, error);
+                    return { empresaId, empresa: null };
+                }
+            });
+
+            const companies = await Promise.all(companyPromises);
+            console.log('Fetched Companies:', companies); // Depuración
+
+            // 4. Crear un mapa de empresaId a empresa
+            const companyMap = {};
+            companies.forEach(({ empresaId, empresa }) => {
+                companyMap[empresaId] = empresa;
+            });
+            console.log('Company Map:', companyMap); // Depuración
+
+            // 5. Asignar la empresa a cada trabajo
+            const jobsWithCompanyData = jobs.map(job => ({
+                ...job,
+                empresa: companyMap[job.empresaId] || null,
+            }));
 
             setActiveJobs(jobsWithCompanyData);
         } catch (error) {
@@ -64,41 +124,35 @@ const Home = ({ username }) => {
             setError('Error al obtener las ofertas activas.');
         }
     };
-    // Función para obtener la información del usuario
+
+    // useEffect para obtener los datos del usuario
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = localStorage.getItem('token');  // Obtener el token almacenado
-                const response = await axios.get(`http://localhost:3001/user/${userId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,  // Enviar el token en los encabezados
-                    },
-                });
-                setUserData(response.data.user);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                setError('Error al obtener los datos del usuario');
-            }
-        };
+        if (!userId) return; // Asegurarse de que userId está definido
 
-        const fetchStats = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/candidatos/${userId}/application-counts`);
-                const counts = response.data.counts;
-                const formattedStats = {
-                    aceptadas: counts.find(c => c.estado === 'aceptada')?.cantidad || 0,
-                    rechazadas: counts.find(c => c.estado === 'rechazada')?.cantidad || 0,
-                    pendientes: counts.find(c => c.estado === 'pendiente')?.cantidad || 0
-                };
-                setStats(formattedStats);
-            } catch (error) {
-                setError('Error al obtener las estadísticas');
-            }
-        };
+        if (!hasFetchedUserData.current) {
+            fetchUserData();
+            hasFetchedUserData.current = true;
+        }
+    }, [userId]);
 
-        fetchStats();
-        fetchData();
-        fetchActiveJobs();
+    // useEffect para obtener las estadísticas de candidatos
+    useEffect(() => {
+        if (!userId) return; // Asegurarse de que userId está definido
+
+        if (!hasFetchedStats.current) {
+            fetchStats();
+            hasFetchedStats.current = true;
+        }
+    }, [userId]);
+
+    // useEffect para obtener las ofertas de empleo activas
+    useEffect(() => {
+        if (!userId) return; // Asegurarse de que userId está definido
+
+        if (!hasFetchedActiveJobs.current) {
+            fetchActiveJobs();
+            hasFetchedActiveJobs.current = true;
+        }
     }, [userId]);
 
     // Datos del gráfico de barras
@@ -121,7 +175,7 @@ const Home = ({ username }) => {
         salario: '',
         tipoTrabajo: '',
         modalidad: '',
-        fechaPublicacion: '',
+        fecha: '', // Consistente con 'fechaPublicacion'
     });
 
     // Filtrar las ofertas de empleo
@@ -167,10 +221,6 @@ const Home = ({ username }) => {
         setFilteredJobs(filtered);
     }, [filters, activeJobs]);
 
-    useEffect(() => {
-        fetchActiveJobs();  // Llamar a fetchActiveJobs aquí
-    }, [userId]);
-
     // Función para manejar los cambios en los filtros
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -179,7 +229,6 @@ const Home = ({ username }) => {
             [name]: value,
         }));
     };
-
 
     // Opciones de configuración del gráfico
     const options = {
@@ -190,6 +239,7 @@ const Home = ({ username }) => {
             },
             title: {
                 display: true,
+                text: 'Estado de Solicitudes'
             },
         },
         scales: {
@@ -207,7 +257,7 @@ const Home = ({ username }) => {
         },
     };
 
-
+    // useEffect para verificar el estado de la aplicación
     useEffect(() => {
         if (selectedJob) {
             const checkApplicationStatus = async () => {
@@ -252,6 +302,7 @@ const Home = ({ username }) => {
         setApplicationStatus(null); // Resetear estado al seleccionar un nuevo trabajo
     };
 
+    // Componente para secciones de detalles
     const DetailSection = ({ icon: Icon, title, content }) => (
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-md transition-all hover:shadow-lg hover:bg-gray-100">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center mb-3">
@@ -274,6 +325,7 @@ const Home = ({ username }) => {
         </div>
     );
 
+    // Funciones para renderizar detalles de la oferta y de la empresa
     const renderOfferDetails = () => (
         <div className=" p-2 max-w-8xl min-h-[730px] overflow-y-auto">
             <div className="space-y-6">
@@ -343,7 +395,6 @@ const Home = ({ username }) => {
             </div>
         </div>
     );
-
 
     return (
         <div className="min-h-screen flex flex-col bg-white flex-grow">

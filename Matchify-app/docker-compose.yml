@@ -9,10 +9,13 @@ services:
       - DB_USER=test
       - DB_PASS=test
       - DB_HOST=db
+      - REDIS_HOST=redis        # Host de Redis
+      - REDIS_PORT=6379         # Puerto de Redis
     volumes:
       - ./backend:/usr/src/app
     depends_on:
       - db
+      - redis
 
   frontend:
     build: ./frontend
@@ -40,6 +43,11 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"             # Puerto donde escucha Redis
 
 volumes:
   mysql-data:
