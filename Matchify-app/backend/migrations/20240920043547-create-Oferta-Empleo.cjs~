@@ -64,7 +64,7 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       modalidad: {
-        type: Sequelize.ENUM('Presencial', 'Virtual', 'Hibrido'),
+        type: Sequelize.ENUM('Presencial', 'Virtual', 'Híbrido'),
         allowNull: false,
         defaultValue: 'Presencial',
       },

@@ -57,7 +57,7 @@ const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
         },
     },
     modalidad: {
-        type: DataTypes.ENUM('Presencial', 'Virtual', 'Hibrido'),
+        type: DataTypes.ENUM('Presencial', 'Virtual', 'Híbrido'),
         allowNull: false,
         defaultValue: 'Presencial',
     },
