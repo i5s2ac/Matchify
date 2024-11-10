@@ -8,11 +8,14 @@ services:
       - DB_NAME=Matchify
       - DB_USER=test
       - DB_PASS=test
-      - DB_HOST=db
+      - DB_HOST=mongo
+      - DB_PORT=27017
+      - JWT_SECRET=9f$@2!kzL*6pV@w3qYz&8mJr4jDxL1
     volumes:
       - ./backend:/usr/src/app
     depends_on:
-      - db
+      - mongo
+    restart: always  # Add restart policy
 
   frontend:
     build: ./frontend
@@ -28,18 +31,20 @@ services:
     stdin_open: true  # Permite interacciones si es necesario
     tty: true         # Mantiene el contenedor en ejecución
 
-  db:
-    image: mysql:8.0
+  mongo:
+    image: mongo:latest
     restart: always
     environment:
-      MYSQL_DATABASE: Matchify
-      MYSQL_USER: test
-      MYSQL_PASSWORD: test
-      MYSQL_ROOT_PASSWORD: test
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: Matchify
     ports:
-      - "3306:3306"
+      - "27017:27017"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mongo-data:/data/db
+      # Add a volume for initialization scripts
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    command: mongod --auth  # Enable authentication
 
 volumes:
-  mysql-data:
+  mongo-data:

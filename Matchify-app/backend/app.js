@@ -1,27 +1,29 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';  // Importamos la función de conexión
 import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import industryRoutes from './routes/industryRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
 import candidatoRoutes from './routes/candidatoRoutes.js';
-import cvRoutes from './routes/cvRoutes.js'
+import cvRoutes from './routes/cvRoutes.js';
 
-import sequelize from './config/database.js'; // Importa la conexión a la base de datos
-import defineAssociations from './models/associations.js'; // Importa las asociaciones
-
+// Cargar variables de entorno
 dotenv.config();
 
+// Inicializar express
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Definir las asociaciones entre los modelos
-defineAssociations();
+// Conectar a MongoDB
+connectDB();
 
-// Rutas de autenticación
+// Rutas de autenticación y recursos
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/job', jobRoutes);
@@ -30,20 +32,26 @@ app.use('/company', companyRoutes);
 app.use('/candidatos', candidatoRoutes);
 app.use('/cv', cvRoutes);
 
-
-// Endpoint "Hola Mundo"
+// Endpoint de prueba
 app.get('/', (req, res) => {
     res.send('Backend Corriendo');
 });
 
-// Sincronizar los modelos con la base de datos y luego iniciar el servidor
+// Manejo de errores global
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+// Iniciar el servidor
 const PORT = process.env.PORT || 3001;
-sequelize.sync({ alter: true }) // Esto ajusta las tablas si es necesario
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    })
-    .catch((err) => {
-        console.error('Unable to connect to the database:', err);
-    });
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
+// Manejo de errores no capturados
+process.on('unhandledRejection', (err) => {
+    console.log('Unhandled Rejection:', err);
+});
+
+export default app;

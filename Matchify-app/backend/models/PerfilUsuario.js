@@ -1,35 +1,27 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import User from './User.js'; // Asegúrate de que la ruta sea correcta
+// models/PerfilUsuario.js
+import mongoose from 'mongoose';
 
-const PerfilUsuario = sequelize.define('PerfilUsuario', {
+const perfilUsuarioSchema = new mongoose.Schema({
     resumenProfesional: {
-        type: DataTypes.TEXT,
-        allowNull: true, // Permite que sea opcional
+        type: String,
+        required: false
     },
     ubicacion: {
-        type: DataTypes.STRING,
-        allowNull: true, // Permite que sea opcional
+        type: String,
+        required: false
     },
     fechaUltimaActualizacion: {
-        type: DataTypes.DATE,
-        allowNull: true, // Permite que sea opcional
+        type: Date,
+        required: false
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: User,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 }, {
-    tableName: 'perfil_usuarios',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true,
+    collection: 'perfil_usuarios'
 });
 
-// Definir la asociación con User
-PerfilUsuario.belongsTo(User, { foreignKey: 'usuarioId', as: 'usuario' });
-
-export default PerfilUsuario;
+const PerfilUsuario = mongoose.models.PerfilUsuario || mongoose.model('PerfilUsuario', perfilUsuarioSchema);

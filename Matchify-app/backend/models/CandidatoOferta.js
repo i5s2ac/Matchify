@@ -1,40 +1,32 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
-import OfertaEmpleo from './OfertaEmpleo.js'; // Mantén las importaciones directas
-import User from './User.js'; // Importa el modelo `User` directamente si es posible
+// models/CandidatoOferta.js
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import User from './User.js';  // Asegúrate de que la ruta sea correcta
+import OfertaEmpleo from './OfertaEmpleo.js';  // Asegúrate de que la ruta sea correcta
 
-const CandidatoOferta = sequelize.define('CandidatoOferta', {
+// Definición del esquema para CandidatoOferta
+const candidatoOfertaSchema = new Schema({
     estado: {
-        type: DataTypes.ENUM('pendiente', 'en proceso', 'aceptada', 'rechazada'),
-        allowNull: false,
+        type: String,
+        enum: ['pendiente', 'en proceso', 'aceptada', 'rechazada'],
+        required: true,
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: User, // Usamos la referencia directa al modelo `User`
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',  // Relación con el modelo User
+        required: true,  // Es obligatorio
     },
     ofertaEmpleoId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: OfertaEmpleo, // Referencia al modelo `OfertaEmpleo`
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfertaEmpleo',  // Relación con el modelo OfertaEmpleo
+        required: true,  // Es obligatorio
     },
 }, {
-    timestamps: true,
-    tableName: 'candidato_oferta',
+    timestamps: true, // Para manejar fechas de creación y actualización automáticamente
 });
 
-// Definir las asociaciones directamente
-CandidatoOferta.belongsTo(User, { foreignKey: 'usuarioId', as: 'candidato' });
-CandidatoOferta.belongsTo(OfertaEmpleo, { foreignKey: 'ofertaEmpleoId', as: 'ofertaEmpleo' });
+// Definir el modelo con el nombre 'CandidatoOferta'
+const CandidatoOferta = mongoose.model('CandidatoOferta', candidatoOfertaSchema);
 
+// Exportar el modelo de forma predeterminada
 export default CandidatoOferta;

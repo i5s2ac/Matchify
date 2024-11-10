@@ -1,19 +1,21 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import mongoose from 'mongoose';
 
-const Rol = sequelize.define('Rol', {
+const rolSchema = new mongoose.Schema({
     nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true, // Asegúrate de que los nombres de rol sean únicos
+        type: String,
+        required: true,
+        unique: true, // Define el nombre del rol como único
     },
     descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: true, // Permite que la descripción sea opcional
+        type: String,
+        required: false, // Opcional
     },
 }, {
-    tableName: 'roles',
-    timestamps: true, // Si quieres que Sequelize maneje las fechas de creación y actualización
+    timestamps: true, // Agrega createdAt y updatedAt automáticamente
+    collection: 'roles' // Opcional: especifica el nombre de la colección
 });
+
+// Crear el modelo de Rol usando el esquema definido
+const Rol = mongoose.model('Rol', rolSchema);
 
 export default Rol;

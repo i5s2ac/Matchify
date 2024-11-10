@@ -1,35 +1,31 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import Usuario from './User.js'; // Asegúrate de que la ruta sea correcta
+import mongoose from 'mongoose';
+import User from './User.js'; // Asegúrate de que la ruta sea correcta
 
-const Skill = sequelize.define('Skill', {
+const skillSchema = new mongoose.Schema({
     nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     nivelDominio: {
-        type: DataTypes.ENUM('basico', 'intermedio', 'avanzado', 'experto'),
-        allowNull: false,
+        type: String,
+        enum: ['basico', 'intermedio', 'avanzado', 'experto'],
+        required: true,
     },
     descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+        type: String,
+        required: false,
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Usuario,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Referencia al modelo 'User'
+        required: true,
     },
 }, {
-    tableName: 'Skills',
-    timestamps: true, // Si quieres que Sequelize maneje las fechas de creación y actualización
+    timestamps: true, // Agrega createdAt y updatedAt automáticamente
+    collection: 'skills' // Opcional: especifica el nombre de la colección
 });
 
-// Definir la asociación con Usuario
-Skill.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' });
+// Crear el modelo de Skill usando el esquema definido
+const Skill = mongoose.model('Skill', skillSchema);
 
 export default Skill;

@@ -1,37 +1,36 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import mongoose from 'mongoose';
 
-const User = sequelize.define('User', {
-    id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-    },
+const userSchema = new mongoose.Schema({
     username: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
         unique: true,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
         unique: true,
         validate: {
-            isEmail: true,
-        },
+            validator: function(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email!`
+        }
     },
     password: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     telefono: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
+        type: String,
+        required: false,
+    }
 }, {
     timestamps: true,
-    tableName: 'users',
+    collection: 'users' // Opcional: especifica el nombre de la colección
 });
+
+// Crear el modelo de usuario usando el esquema definido
+const User = mongoose.model('User', userSchema);
 
 export default User;
