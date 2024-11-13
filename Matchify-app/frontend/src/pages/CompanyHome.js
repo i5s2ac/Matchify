@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { PencilIcon, UserIcon,EyeIcon, CheckIcon, XMarkIcon, TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon, CurrencyDollarIcon, BriefcaseIcon } from '@heroicons/react/24/solid';
+import {
+    PencilIcon, UserIcon, EyeIcon, CheckIcon, XMarkIcon,
+    TrashIcon, PlusCircleIcon, MagnifyingGlassIcon, CalendarIcon,
+    CurrencyDollarIcon, BriefcaseIcon
+} from '@heroicons/react/24/solid';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');  // O el ID de tu div principal
@@ -12,7 +16,7 @@ const MySwal = withReactContent(Swal);
 
 const CompanyHome = () => {
     const { userId, empresaId, rolId } = useParams();
-    const [userData, setUserData] = useState(null);  // Store the user data
+    const [userData, setUserData] = useState(null);
     const [jobOffers, setJobOffers] = useState([]);
     const [pendingCandidates, setPendingCandidates] = useState([]);
     const [historyCandidates, setHistoryCandidates] = useState([]);
@@ -24,22 +28,27 @@ const CompanyHome = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOfferId, setSelectedOfferId] = useState(null);
-    const [selectedCV, setSelectedCV] = useState(null);  // Guardar el CV del candidato
+    const [selectedCV, setSelectedCV] = useState(null);
     const [modalIsOpen, setIsOpen] = useState(false);
+
+    // Referencias para evitar llamadas duplicadas
+    const hasFetchedJobOffers = useRef(false);
+    const hasFetchedCandidates = useRef(false);
+    const hasFetchedUser = useRef(false);
 
     const openModal = async (candidatoId, username) => {
         console.log(`Abriendo modal para el candidato con ID: ${candidatoId}`);
         const cv = await fetchCV(candidatoId);
         if (cv) {
-            setSelectedCV({ ...cv, username });  // Agrega el username al CV
-            setIsOpen(true);  // Abre el modal si se obtuvo el CV
+            setSelectedCV({ ...cv, username });
+            setIsOpen(true);
             console.log("Modal abierto");
         }
     };
 
     const closeModal = () => {
         setIsOpen(false);
-        setSelectedCV(null);  // Limpiar el CV cuando se cierre el modal
+        setSelectedCV(null);
     };
 
     const fetchJobOffers = async () => {
@@ -53,16 +62,15 @@ const CompanyHome = () => {
                     data.ofertas.map(async (offer) => {
                         try {
                             const countResponse = await axios.get(`http://localhost:3001/job/${offer.id}/candidate-count`);
-                            const candidateCount = countResponse.data.candidateCount || 0; // Evitar valores nulos o indefinidos
+                            const candidateCount = countResponse.data.candidateCount || 0;
                             return { ...offer, candidateCount };
                         } catch (error) {
                             console.error(`Error al obtener el conteo de candidatos para la oferta ${offer.id}:`, error);
-                            return { ...offer, candidateCount: 0 }; // Si falla, asignamos 0 candidatos
+                            return { ...offer, candidateCount: 0 };
                         }
                     })
                 );
 
-                // Actualizar el estado con las ofertas y el conteo de candidatos
                 setJobOffers(ofertasConConteo);
                 setActiveJobCount(ofertasConConteo.filter(offer => offer.estatus === 'Activo').length);
                 setInactiveJobCount(ofertasConConteo.filter(offer => offer.estatus === 'Inactivo').length);
@@ -77,19 +85,16 @@ const CompanyHome = () => {
         }
     };
 
-    // Función para obtener el CV del candidato seleccionado
     const fetchCV = async (candidatoId) => {
         try {
             const response = await axios.get(`http://localhost:3001/cv/candidato/${candidatoId}/cv`);
-            return response.data.data;  // Devuelve el CV obtenido
+            return response.data.data;
         } catch (error) {
             console.error('Error al obtener el CV del candidato:', error);
             return null;
         }
     };
 
-
-    // Función para obtener candidatos pendientes e historial
     const fetchCandidates = async () => {
         try {
             const response = await axios.get(`http://localhost:3001/candidatos/candidates`, {
@@ -111,6 +116,9 @@ const CompanyHome = () => {
 
     useEffect(() => {
         const fetchUser = async () => {
+            if (hasFetchedUser.current) return; // Evitar llamada duplicada
+            hasFetchedUser.current = true;
+
             try {
                 const token = localStorage.getItem('token');  // Obtener el token almacenado
                 const response = await axios.get(`http://localhost:3001/user/${userId}`, {
@@ -128,24 +136,32 @@ const CompanyHome = () => {
         fetchUser();
     }, [userId]);
 
-    // Actualizar estado de candidato
+    useEffect(() => {
+        const fetchOffersAndCandidates = async () => {
+            if (!hasFetchedJobOffers.current) {
+                await fetchJobOffers();
+                hasFetchedJobOffers.current = true;
+            }
+            if (!hasFetchedCandidates.current) {
+                await fetchCandidates();
+                hasFetchedCandidates.current = true;
+            }
+        };
+
+        fetchOffersAndCandidates();
+    }, [empresaId, userId]);
+
+    // Función para actualizar el estado de un candidato
     const handleUpdateCandidato = async (candidatoId, nuevoEstado) => {
         try {
             await axios.put(`http://localhost:3001/candidatos/update-status`, { candidatoId, estado: nuevoEstado });
             Swal.fire('Actualizado', 'El estado del candidato ha sido actualizado.', 'success');
-            fetchCandidates();
+            fetchCandidates(); // Actualizar la lista de candidatos
         } catch (error) {
             Swal.fire('Error', 'Hubo un error al actualizar el estado del candidato.', 'error');
             console.error('Error al actualizar candidato:', error);
         }
     };
-
-    useEffect(() => {
-        fetchJobOffers();
-        fetchCandidates();
-    }, [empresaId, userId]);
-
-
 
     // Función para manejar la eliminación de una oferta
     const handleDelete = async (offerId) => {
@@ -172,6 +188,7 @@ const CompanyHome = () => {
         }
     };
 
+    // Función para alternar el estado de una oferta
     const handleToggleStatus = async (offerId, currentStatus) => {
         const newStatus = currentStatus === 'Activo' ? 'Inactivo' : 'Activo';
 
@@ -270,7 +287,13 @@ const CompanyHome = () => {
         );
     });
 
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Cargando...</div>;
+    }
 
+    if (error) {
+        return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    }
 
 
     return (

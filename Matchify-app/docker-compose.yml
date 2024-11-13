@@ -8,13 +8,16 @@ services:
       - DB_NAME=Matchify
       - DB_USER=test
       - DB_PASS=test
-      - DB_HOST=mongo
+      - DB_HOST=db
       - DB_PORT=27017
       - JWT_SECRET=9f$@2!kzL*6pV@w3qYz&8mJr4jDxL1
+      - REDIS_HOST=redis        # Host de Redis
+      - REDIS_PORT=6379         # Puerto de Redis
     volumes:
       - ./backend:/usr/src/app
     depends_on:
-      - mongo
+      - db
+      - redis
     restart: always  # Add restart policy
 
   frontend:
@@ -31,7 +34,7 @@ services:
     stdin_open: true  # Permite interacciones si es necesario
     tty: true         # Mantiene el contenedor en ejecución
 
-  mongo:
+  db:
     image: mongo:latest
     restart: always
     environment:
@@ -45,6 +48,11 @@ services:
       # Add a volume for initialization scripts
       - ./mongo-init:/docker-entrypoint-initdb.d
     command: mongod --auth  # Enable authentication
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"             # Puerto donde escucha Redis
 
 volumes:
   mongo-data:
