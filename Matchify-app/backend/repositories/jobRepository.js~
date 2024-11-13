@@ -1,0 +1,124 @@
+// repositories/jobRepository.js
+import Job from '../models/OfertaEmpleo.js.js';
+import User from '../models/User.js';
+import Empresa from '../models/Empresa.js.js';
+import mongoose from 'mongoose';
+
+export const createJobOffer = async (jobData) => {
+    try {
+        const job = new Job(jobData);
+        return await job.save();
+    } catch (error) {
+        throw new Error(`Error al crear la oferta de trabajo: ${error.message}`);
+    }
+};
+
+export const searchJobOffers = async (filters) => {
+    try {
+        const query = {};
+
+        if (filters.titulo) {
+            query.titulo = new RegExp(filters.titulo, 'i');
+        }
+        if (filters.ubicacion) {
+            query.ubicacion = new RegExp(filters.ubicacion, 'i');
+        }
+        if (filters.estatus) {
+            query.estatus = filters.estatus;
+        }
+
+        return await Job.find(query);
+    } catch (error) {
+        throw new Error(`Error en la búsqueda de ofertas: ${error.message}`);
+    }
+};
+
+export const getEmpresasByIds = async (empresaIds) => {
+    try {
+        return await Empresa.find({ _id: { $in: empresaIds } });
+    } catch (error) {
+        throw new Error(`Error al obtener empresas: ${error.message}`);
+    }
+};
+
+export const getUserById = async (userId) => {
+    try {
+        return await User.findById(userId);
+    } catch (error) {
+        throw new Error(`Error al obtener usuario: ${error.message}`);
+    }
+};
+
+export const getJobOfferById = async (id) => {
+    try {
+        return await Job.findById(id);
+    } catch (error) {
+        throw new Error(`Error al obtener oferta por ID: ${error.message}`);
+    }
+};
+
+export const updateJobOffer = async (id, updates) => {
+    try {
+        const job = await Job.findByIdAndUpdate(id, updates, { new: true });
+        if (!job) {
+            throw new Error('Oferta no encontrada');
+        }
+        return job;
+    } catch (error) {
+        throw new Error(`Error al actualizar oferta: ${error.message}`);
+    }
+};
+
+export const deleteJobOffer = async (id) => {
+    try {
+        const job = await Job.findByIdAndDelete(id);
+        if (!job) {
+            throw new Error('Oferta no encontrada');
+        }
+        return job;
+    } catch (error) {
+        throw new Error(`Error al eliminar oferta: ${error.message}`);
+    }
+};
+
+export const getJobOffersByCompany = async (empresaId, userId = null) => {
+    try {
+        const query = { empresaId: empresaId };
+        return await Job.find(query).populate('empresaId');
+    } catch (error) {
+        throw new Error(`Error al obtener ofertas por empresa: ${error.message}`);
+    }
+};
+
+export const getActiveJobOffers = async () => {
+    try {
+        return await Job.find({ estatus: 'Activo' });
+    } catch (error) {
+        throw new Error(`Error al obtener ofertas activas: ${error.message}`);
+    }
+};
+
+export const getJobCountByStatus = async (empresaId, status) => {
+    try {
+        return await Job.countDocuments({ empresaId, estatus: status });
+    } catch (error) {
+        throw new Error(`Error al contar ofertas por estado: ${error.message}`);
+    }
+};
+
+export const getJobOffersByStatus = async (empresaId, status) => {
+    try {
+        return await Job.find({ empresaId, estatus: status });
+    } catch (error) {
+        throw new Error(`Error al obtener ofertas por estado: ${error.message}`);
+    }
+};
+
+export const countCandidatesForJobOffer = async (jobOfferId) => {
+    try {
+        const job = await Job.findById(jobOfferId);
+        return job?.candidates?.length || 0;
+    } catch (error) {
+        throw new Error(`Error al contar candidatos: ${error.message}`);
+    }
+};

@@ -1,0 +1,52 @@
+// repositories/userRepository.js
+import User from '../models/User.js';
+
+// Buscar un usuario por correo electrónico
+export const findUserByEmail = async (email) => {
+    try {
+        return await User.findOne({ email });
+    } catch (error) {
+        throw new Error(`Error al buscar el usuario por correo electrónico: ${error.message}`);
+    }
+};
+
+// Crear un nuevo usuario
+export const createUser = async (userData) => {
+    try {
+        const user = new User(userData);
+        return await user.save(); // Mongoose usa `save()` para guardar un documento
+    } catch (error) {
+        throw new Error(`Error al crear el usuario: ${error.message}`);
+    }
+};
+
+// Buscar un usuario por ID
+export const findUserById = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        // Convertimos el userId a ObjectId antes de buscar
+        const user = await User.findById(mongoose.Types.ObjectId(userId));
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener el usuario' });
+    }
+};
+
+// Actualizar un usuario en la base de datos
+export const updateUser = async (userId, updates) => {
+    try {
+        const user = await User.findByIdAndUpdate(userId, updates, { new: true }); // `new: true` retorna el documento actualizado
+
+        if (!user) {
+            return null; // Retorna null si el usuario no se encuentra
+        }
+
+        return user; // Retorna el usuario actualizado
+    } catch (error) {
+        throw new Error(`Error al actualizar el usuario en la base de datos: ${error.message}`);
+    }
+};

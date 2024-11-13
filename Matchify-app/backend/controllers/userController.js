@@ -1,24 +1,31 @@
-import { getUserByIdService, updateUserService} from '../services/userService.js';
+// controllers/userController.js
+import { getUserByIdService, updateUserService } from '../services/userService.js';
+import mongoose from 'mongoose';
 
 export const getUserById = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params;
+
+    console.log('userId recibido:', userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'ID de usuario no válido' });
+    }
 
     try {
-        const user = await getUserByIdService(id);
+        const user = await getUserByIdService(userId);
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(404).json({ message: 'Usuario no encontrado' });
         }
-        return res.status(200).json({ success: true, user });
+        res.json(user);
     } catch (error) {
-        console.error('Error fetching user data:', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ message: 'Error al obtener el usuario' });
     }
 };
 
-// Controlador para actualizar un usuario por su ID
 export const updateUserById = async (req, res) => {
-    const userId = req.params.id; // Obtiene el ID del usuario desde los parámetros de la URL
-    const { username, email, telefono } = req.body; // Datos enviados en la solicitud
+    const { userId } = req.params;
+    const { username, email, telefono } = req.body;
 
     try {
         const updatedUser = await updateUserService(userId, { username, email, telefono });

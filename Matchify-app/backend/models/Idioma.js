@@ -11,7 +11,7 @@ const idiomaSchema = new Schema({
     },
     nivelDominio: {
         type: String,
-        enum: ['básico', 'intermedio', 'avanzado', 'experto'], // Valores posibles para el nivel de dominio
+        enum: ['basico', 'intermedio', 'avanzado', 'experto'], // Valores posibles para el nivel de dominio
         required: true, // No puede ser nulo
     },
     usuarioId: {
