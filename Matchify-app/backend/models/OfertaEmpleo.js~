@@ -1,94 +1,92 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
+import mongoose from 'mongoose';
 
-const OfertaEmpleo = sequelize.define('OfertaEmpleo', {
+const ofertaEmpleoSchema = new mongoose.Schema({
     titulo: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true
     },
     descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-        validate: {
-            len: [0, 255],
-        },
+        type: String,
+        required: true,
+        maxlength: 255 // Límite de longitud de la descripción
     },
     ubicacion: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false
     },
     salario: {
-        type: DataTypes.DECIMAL,
-        allowNull: true,
+        type: mongoose.Types.Decimal128,
+        required: false
     },
     fechaPublicacion: {
-        type: DataTypes.DATE,
-        allowNull: true,
+        type: Date,
+        required: false
     },
     fechaCierre: {
-        type: DataTypes.DATE,
-        allowNull: true,
+        type: Date,
+        required: false
     },
     empresaId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Empresa', // Cambia 'Empresa' si el modelo de empresa tiene otro nombre
+        required: true
     },
     userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Cambia 'User' si el modelo de usuario tiene otro nombre
+        required: true
     },
     estatus: {
-        type: DataTypes.ENUM('Activo', 'Inactivo'),
-        allowNull: false,
-        defaultValue: 'Activo',
+        type: String,
+        enum: ['Activo', 'Inactivo'],
+        default: 'Activo'
     },
     tags: {
-        type: DataTypes.TEXT,
-        get() {
-            const rawValue = this.getDataValue('tags');
-            return rawValue ? rawValue.split(',') : [];
-        },
-        set(value) {
-            if (Array.isArray(value)) {
-                this.setDataValue('tags', value.join(','));
-            } else {
-                throw new Error('Los tags deben ser un arreglo.');
-            }
-        },
+        type: [String], // Se almacena como un array de strings en lugar de texto separado por comas
+        default: []
     },
     modalidad: {
-        type: DataTypes.ENUM('Presencial', 'Virtual', 'Híbrido'),
+<<<<<<< Updated upstream
+        type: DataTypes.ENUM('Presencial', 'Virtual', 'Hibrido'),
         allowNull: false,
         defaultValue: 'Presencial',
+=======
+        type: String,
+        enum: ['Presencial', 'Virtual', 'Híbrido'],
+        default: 'Presencial'
+>>>>>>> Stashed changes
     },
     tipoTrabajo: {
-        type: DataTypes.ENUM('Tiempo Completo', 'Tiempo Parcial', 'Por Proyecto'),
-        allowNull: false,
-        defaultValue: 'Tiempo Completo',
+        type: String,
+        enum: ['Tiempo Completo', 'Tiempo Parcial', 'Por Proyecto'],
+        default: 'Tiempo Completo'
     },
     Funciones_Requerimiento: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false
     },
     Estudios_Requerimiento: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false
     },
     Experiencia_Requerimiento: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false
     },
     Conocimientos_Requerimiento: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false
     },
     Competencias_Requerimiento: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
+        type: String,
+        required: false
+    }
 }, {
-    tableName: 'ofertas_empleos',
     timestamps: true,
+    collection: 'ofertas_empleos' // Especifica el nombre de la colección si es necesario
 });
+
+// Crear el modelo de OfertaEmpleo usando el esquema definido
+const OfertaEmpleo = mongoose.model('OfertaEmpleo', ofertaEmpleoSchema);
 
 export default OfertaEmpleo;

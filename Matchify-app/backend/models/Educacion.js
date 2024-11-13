@@ -1,38 +1,38 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según sea necesario
-import User from './User.js'; // Asegúrate de que el modelo User esté correctamente importado
+// models/Educacion.js
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import User from './User.js';  // Asegúrate de que la ruta sea correcta
 
-const Educacion = sequelize.define('Educacion', {
+// Verificar si el modelo ya existe para evitar sobrescribirlo
+const Educacion = mongoose.models.Educacion || mongoose.model('Educacion', new Schema({
     institucion: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true, // Es obligatorio
     },
     gradoObtenido: {
-        type: DataTypes.STRING,
+        type: String,
+        required: false, // No es obligatorio
     },
     campoEstudio: {
-        type: DataTypes.STRING,
+        type: String,
+        required: false, // No es obligatorio
     },
     fechaInicio: {
-        type: DataTypes.DATEONLY,  // Para manejar solo la fecha sin hora
+        type: Date,
+        required: false, // No es obligatorio
     },
     fechaFin: {
-        type: DataTypes.DATEONLY,  // Lo mismo aquí
+        type: Date,
+        required: false, // No es obligatorio
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,  // Clave foránea no puede ser nula
-        references: {
-            model: User,  // Asegúrate de referenciar el modelo correcto
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',  // Relación con el modelo User
+        required: true,  // Es obligatorio
     },
 }, {
-    tableName: 'educacion',
-    timestamps: true,  // Si quieres timestamps automáticos (createdAt, updatedAt)
-});
+    timestamps: true, // Para manejar fechas de creación y actualización automáticamente
+}));
 
-// Exportar el modelo
+// Exportar el modelo de forma predeterminada
 export default Educacion;

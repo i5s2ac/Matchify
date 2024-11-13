@@ -1,35 +1,37 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según sea necesario
-import User from './User.js'; // Asegúrate de que el modelo User esté correctamente importado
+// models/Certificacion.js
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import User from './User.js';  // Asegúrate de que la ruta sea correcta
 
-const Certificacion = sequelize.define('Certificacion', {
+// Definición del esquema para Certificacion
+const certificacionSchema = new Schema({
     nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,  // Es obligatorio
     },
     organizacionEmisora: {
-        type: DataTypes.STRING,
+        type: String,
+        required: false,  // No es obligatorio
     },
     fechaObtencion: {
-        type: DataTypes.DATEONLY,  // Maneja solo la fecha sin la hora
+        type: Date,
+        required: false,  // No es obligatorio
     },
     descripcion: {
-        type: DataTypes.TEXT,
+        type: String,
+        required: false,  // No es obligatorio
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,  // Clave foránea no puede ser nula
-        references: {
-            model: User,  // Asegúrate de que el modelo User está correctamente referenciado
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',  // Relación con el modelo User
+        required: true,  // Es obligatorio
     },
 }, {
-    tableName: 'certificaciones',
-    timestamps: true,  // Si quieres timestamps automáticos (createdAt, updatedAt)
+    timestamps: true, // Para manejar fechas de creación y actualización automáticamente
 });
 
-// Exportar el modelo
+// Definir el modelo con el nombre 'Certificacion'
+const Certificacion = mongoose.model('Certificacion', certificacionSchema);
+
+// Exportar el modelo de forma predeterminada
 export default Certificacion;

@@ -1,43 +1,29 @@
-// models/HistorialAplicaciones.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import User from './User.js'; // Asegúrate de que la ruta sea correcta
-import OfertaEmpleo from './OfertaEmpleo.js'; // Asegúrate de que la ruta sea correcta
-
-const HistorialAplicaciones = sequelize.define('HistorialAplicaciones', {
+const historialAplicacionesSchema = new mongoose.Schema({
     fechaAplicacion: {
-        type: DataTypes.DATE,
-        allowNull: false,
+        type: Date,
+        required: true
     },
     estadoAplicacion: {
-        type: DataTypes.ENUM('pendiente', 'en proceso', 'aceptada', 'rechazada'),
-        allowNull: false,
+        type: String,
+        enum: ['pendiente', 'en proceso', 'aceptada', 'rechazada'],
+        required: true
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: User,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Cambiado a 'User' para mantener consistencia
+        required: true
     },
     ofertaEmpleoId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: OfertaEmpleo,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OfertaEmpleo',
+        required: true
+    }
 }, {
-    tableName: 'historial_aplicaciones',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true,
+    collection: 'historial_aplicaciones'
 });
 
-// Definir las asociaciones con User y OfertaEmpleo
-HistorialAplicaciones.belongsTo(User, { foreignKey: 'usuarioId', as: 'usuario' });
-HistorialAplicaciones.belongsTo(OfertaEmpleo, { foreignKey: 'ofertaEmpleoId', as: 'ofertaEmpleo' });
+const HistorialAplicaciones = mongoose.models.HistorialAplicaciones ||
+    mongoose.model('HistorialAplicaciones', historialAplicacionesSchema);
 
-export default HistorialAplicaciones;
+export { PerfilUsuario, Notificacion, HistorialAplicaciones };

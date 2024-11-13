@@ -1,12 +1,18 @@
-// backend/controllers/userController.js
+// controllers/userController.js
+
+import mongoose from 'mongoose';
 import { getClient } from '../config/redisClient.js'; // Importar el cliente de Redis
 import { getUserByIdService, updateUserService } from '../services/userService.js';
 
 // Función para obtener datos del usuario con caché
 export const getUserById = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params;
     const redisClient = getClient();
-    const cacheKey = `user_${id}`;
+    const cacheKey = `user_${userId}`;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'ID de usuario no válido' });
+    }
 
     try {
         // Intentar obtener los datos del caché
@@ -17,9 +23,9 @@ export const getUserById = async (req, res) => {
         }
 
         // Si no hay datos en caché, obtener de la base de datos
-        const user = await getUserByIdService(id);
+        const user = await getUserByIdService(userId);
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
+            return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
         // Guardar los datos en caché por 1 hora (3600 segundos)
@@ -28,14 +34,14 @@ export const getUserById = async (req, res) => {
 
         return res.status(200).json({ success: true, user, cached: false });
     } catch (error) {
-        console.error('Error fetching user data:', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ message: 'Error al obtener el usuario' });
     }
 };
 
 // Función para actualizar datos del usuario y limpiar el caché
 export const updateUserById = async (req, res) => {
-    const userId = req.params.id;
+    const { userId } = req.params;
     const { username, email, telefono } = req.body;
     const redisClient = getClient();
     const cacheKey = `user_${userId}`;

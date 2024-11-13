@@ -1,43 +1,15 @@
 // models/Empresa.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import Industria from './Industria.js'; // Importar el modelo Industria para asegurar que esté referenciado correctamente
+import mongoose from 'mongoose';
 
-const Empresa = sequelize.define('Empresa', {
-    nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    direccion: {
-        type: DataTypes.STRING,
-    },
-    telefono: {
-        type: DataTypes.STRING,
-    },
-    email: {
-        type: DataTypes.STRING,
-    },
-    sitioWeb: {
-        type: DataTypes.STRING,
-    },
-    descripcion: {
-        type: DataTypes.TEXT,
-    },
-    industriaId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Industria, // Asegura que la referencia sea al modelo correcto
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-    },
-}, {
-    tableName: 'empresas',
-    timestamps: true, // Añade campos de createdAt y updatedAt si lo deseas
+const EmpresaSchema = new mongoose.Schema({
+    nombre: { type: String, required: true },
+    direccion: String,
+    telefono: String,
+    email: String,
+    sitioWeb: String,
+    descripcion: String,
+    industriaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Industria' },
 });
 
-// Asociación con Industria
-Empresa.belongsTo(Industria, { foreignKey: 'industriaId', as: 'industria' });
-
-export default Empresa;
+const Empresa = mongoose.model('Empresa', EmpresaSchema);
+export default Empresa;  // Asegúrate de exportar el modelo de esta forma

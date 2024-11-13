@@ -1,32 +1,30 @@
 // models/Idioma.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 import Usuario from './User.js'; // Asegúrate de que la ruta sea correcta
 
-const Idioma = sequelize.define('Idioma', {
+// Definición del esquema para Idioma
+const idiomaSchema = new Schema({
     nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true, // No puede ser nulo
     },
     nivelDominio: {
-        type: DataTypes.ENUM('basico', 'intermedio', 'avanzado', 'experto'),
-        allowNull: false,
+        type: String,
+        enum: ['basico', 'intermedio', 'avanzado', 'experto'], // Valores posibles para el nivel de dominio
+        required: true, // No puede ser nulo
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Usuario,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario', // Relación con el modelo Usuario
+        required: true, // Es obligatorio
     },
 }, {
-    tableName: 'idiomas',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true, // Para manejar fechas de creación y actualización automáticamente
 });
 
-// Definir la asociación con Usuario
-Idioma.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' });
+// Definir el modelo con el nombre 'Idioma'
+const Idioma = mongoose.model('Idioma', idiomaSchema);
 
+// Exportar el modelo de forma predeterminada
 export default Idioma;

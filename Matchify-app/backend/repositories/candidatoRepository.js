@@ -5,82 +5,96 @@ import User from "../models/User.js"; // Verifica que el archivo de User esté b
 
 // Buscar todas las candidaturas por empresa
 export const findAllCandidatosByEmpresa = async (empresaId) => {
-    return await CandidatoOferta.findAll({
-        include: [
+    try {
+        return await CandidatoOferta.find({
+            'ofertaEmpleo.empresaId': empresaId
+        }).populate([
             {
-                model: OfertaEmpleo,
-                as: 'ofertaEmpleo',  // Asegúrate de que la asociación esté correctamente configurada
-                where: { empresaId }, // Filtrar por `empresaId` en la tabla `OfertaEmpleo`
+                path: 'ofertaEmpleo',
+                match: { empresaId: empresaId }
             },
             {
-                model: User,
-                as: 'candidato', // Incluir los datos del usuario que aplicó
-                attributes: ['id', 'username', 'email'] // Asegúrate de seleccionar los campos necesarios
+                path: 'candidato',
+                select: ['id', 'username', 'email']
             }
-        ]
-    });
+        ]);
+    } catch (error) {
+        throw new Error(`Error al buscar candidatos por empresa: ${error.message}`);
+    }
 };
 
 // Buscar un candidato por su ID
 export const findCandidatoById = async (candidatoId) => {
-    return await CandidatoOferta.findByPk(candidatoId);
+    try {
+        return await CandidatoOferta.findById(candidatoId);
+    } catch (error) {
+        throw new Error(`Error al buscar candidato por ID: ${error.message}`);
+    }
 };
 
 // Actualizar el estado de un candidato
 export const updateCandidatoStatus = async (candidatoId, estado) => {
-    const candidato = await findCandidatoById(candidatoId);
-    if (!candidato) {
-        throw new Error('Candidato no encontrado');
+    try {
+        const candidato = await findCandidatoById(candidatoId);
+        if (!candidato) {
+            throw new Error('Candidato no encontrado');
+        }
+        candidato.estado = estado;
+        await candidato.save();
+        return candidato;
+    } catch (error) {
+        throw new Error(`Error al actualizar el estado del candidato: ${error.message}`);
     }
-    candidato.estado = estado;
-    await candidato.save();
-    return candidato;
 };
 
 // Verificar si el usuario ya ha aplicado a una oferta
 export const checkApplication = async (usuarioId, ofertaEmpleoId) => {
-    return await CandidatoOferta.findOne({
-        where: { usuarioId, ofertaEmpleoId },
-    });
+    try {
+        return await CandidatoOferta.findOne({
+            usuarioId: usuarioId,
+            ofertaEmpleoId: ofertaEmpleoId
+        });
+    } catch (error) {
+        throw new Error(`Error al verificar la aplicación: ${error.message}`);
+    }
 };
 
 // Aplicar a una oferta de empleo
 export const applyToJobOffer = async (usuarioId, ofertaEmpleoId) => {
-    return await CandidatoOferta.create({
-        usuarioId,
-        ofertaEmpleoId,
-        estado: 'pendiente', // Estado inicial
-    });
+    try {
+        return await CandidatoOferta.create({
+            usuarioId,
+            ofertaEmpleoId,
+            estado: 'pendiente'
+        });
+    } catch (error) {
+        throw new Error(`Error al aplicar a la oferta de empleo: ${error.message}`);
+    }
 };
 
+// Obtener conteos de aplicaciones por estado
 export const getApplicationCountsByStatusFromDB = async (usuarioId) => {
     try {
-        console.log(`Obteniendo conteos para usuarioId: ${usuarioId}`);
-
-        // Contar las solicitudes aceptadas
-        const countAceptadas = await CandidatoOferta.count({
-            where: { usuarioId, estado: 'aceptada' }
+        const countAceptadas = await CandidatoOferta.countDocuments({
+            usuarioId: usuarioId,
+            estado: 'aceptada'
+        });
+        const countRechazadas = await CandidatoOferta.countDocuments({
+            usuarioId: usuarioId,
+            estado: 'rechazada'
+        });
+        const countPendientes = await CandidatoOferta.countDocuments({
+            usuarioId: usuarioId,
+            estado: 'pendiente'
         });
 
-        // Contar las solicitudes rechazadas
-        const countRechazadas = await CandidatoOferta.count({
-            where: { usuarioId, estado: 'rechazada' }
-        });
-
-        // Contar las solicitudes pendientes
-        const countPendientes = await CandidatoOferta.count({
-            where: { usuarioId, estado: 'pendiente' }
-        });
-
-        // Retornar los resultados en un formato que puedas usar fácilmente en el frontend
         return [
             { estado: 'aceptada', cantidad: countAceptadas },
             { estado: 'rechazada', cantidad: countRechazadas },
-            { estado: 'pendiente', cantidad: countPendientes },
+            { estado: 'pendiente', cantidad: countPendientes }
         ];
-
     } catch (error) {
-        console.error('Error al obtener los conteos de la base de datos:', error); // Depuración detallada
+        console.error('Error al obtener los conteos de la base de datos:', error);
         throw new Error('Error al obtener los conteos de las solicitudes.');
     }
 };

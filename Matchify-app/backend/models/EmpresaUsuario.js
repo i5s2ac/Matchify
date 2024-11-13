@@ -1,45 +1,32 @@
 // models/EmpresaUsuario.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import Empresa from './Empresa.js';
-import User from './User.js';
-import Rol from './Rol.js';
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import Empresa from './Empresa.js'; // Asegúrate de que la ruta sea correcta
+import Usuario from './User.js';    // Asegúrate de que la ruta sea correcta
+import Rol from './Rol.js';         // Asegúrate de que la ruta sea correcta
 
-const EmpresaUsuario = sequelize.define('EmpresaUsuario', {
+// Definición del esquema para EmpresaUsuario
+const empresaUsuarioSchema = new Schema({
     empresaId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Empresa,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Empresa', // Relación con el modelo Empresa
+        required: true, // Es obligatorio
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: User,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario', // Relación con el modelo Usuario
+        required: true, // Es obligatorio
     },
     rolId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Rol,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Rol', // Relación con el modelo Rol
+        required: true, // Es obligatorio
     },
 }, {
-    tableName: 'empresa_usuario',
+    timestamps: true, // Para manejar fechas de creación y actualización automáticamente
 });
 
-// Definir las asociaciones
-EmpresaUsuario.belongsTo(Empresa, { foreignKey: 'empresaId', as: 'empresa' });
-EmpresaUsuario.belongsTo(User, { foreignKey: 'usuarioId', as: 'usuario' });
-EmpresaUsuario.belongsTo(Rol, { foreignKey: 'rolId', as: 'rol' });
+// Definir el modelo con el nombre 'EmpresaUsuario'
+const EmpresaUsuario = mongoose.model('EmpresaUsuario', empresaUsuarioSchema);
 
-export default EmpresaUsuario;
+export default EmpresaUsuario; // Usa export default para que sea compatible con import ... from

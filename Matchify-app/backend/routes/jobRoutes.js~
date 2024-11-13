@@ -1,0 +1,30 @@
+// routes/jobRoutes.js
+import express from 'express';
+import {
+    createJobOfferController,
+    searchJobOffersController,
+    updateJobOfferController,
+    deleteJobOfferController,
+    getJobOffersByCompanyController,
+    getJobOfferByIdController,
+    getActiveJobOffersController,
+    toggleJobOfferStatusController,
+    getJobSummaryController,
+    getCandidateCountController
+} from '../controllers/jobController.js';
+
+const router = express.Router();
+
+// Reordenar las rutas para evitar conflictos de coincidencia
+router.get('/search', searchJobOffersController);
+router.get('/company', getJobOffersByCompanyController);
+router.get('/active', getActiveJobOffersController);
+router.get('/summary', getJobSummaryController); // Cambiado de /summary/:empresaId a /summary con query param
+router.get('/:id/candidate-count', getCandidateCountController);
+router.get('/:id', getJobOfferByIdController);
+router.post('/', createJobOfferController); // Simplificado de /create a /
+router.put('/:id', updateJobOfferController); // Simplificado de /update/:id a /:id
+router.put('/:id/toggle-status', toggleJobOfferStatusController);
+router.delete('/:id', deleteJobOfferController); // Simplificado de /delete/:id a /:id
+
+export default router;

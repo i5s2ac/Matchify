@@ -3,21 +3,21 @@
     "username": "test",
     "password": "test",
     "database": "Matchify",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "host": "mongo",
+    "dialect": "mongodb"
   },
   "test": {
     "username": "test",
     "password": "test",
     "database": "Matchify",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "host": "mongo",
+    "dialect": "mongodb"
   },
   "production": {
     "username": "test",
     "password": "test",
     "database": "Matchify",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "host": "mongo",
+    "dialect": "mongodb"
   }
 }

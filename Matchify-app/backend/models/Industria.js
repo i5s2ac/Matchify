@@ -1,25 +1,26 @@
-// models/Industria.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
+import mongoose from 'mongoose';
 
-const Industria = sequelize.define('Industria', {
+const industriaSchema = new mongoose.Schema({
     nombre: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true, // Asegura que los nombres de industria sean únicos
+        type: String,
+        required: true,
+        unique: true // Garantiza que los nombres de industria sean únicos
     },
     descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: true, // Permite que la descripción sea opcional
+        type: String,
+        required: false // Opcional
     },
     codigo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: true, // Si decides añadir un código identificador único
-    },
+        type: String,
+        required: false, // Opcional
+        unique: true // Código único si decides usarlo como identificador
+    }
 }, {
-    tableName: 'industrias',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true, // Agrega automáticamente createdAt y updatedAt
+    collection: 'industrias' // Nombre de la colección en MongoDB
 });
+
+// Crear el modelo de Industria usando el esquema definido
+const Industria = mongoose.model('Industria', industriaSchema);
 
 export default Industria;

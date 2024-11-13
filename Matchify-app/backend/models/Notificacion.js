@@ -1,35 +1,25 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import Usuario from './User.js'; // Asegúrate de que la ruta sea correcta
-
-const Notificacion = sequelize.define('Notificacion', {
+const notificacionSchema = new mongoose.Schema({
     mensaje: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+        type: String,
+        required: true
     },
     fechaEnvio: {
-        type: DataTypes.DATE,
-        allowNull: false,
+        type: Date,
+        required: true
     },
     estado: {
-        type: DataTypes.ENUM('leída', 'no leída'),
-        allowNull: false,
+        type: String,
+        enum: ['leída', 'no leída'],
+        required: true
     },
     usuarioId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Usuario,
-            key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Cambiado a 'User' para mantener consistencia
+        required: true
+    }
 }, {
-    tableName: 'notificaciones',
-    timestamps: true, // Si deseas manejar fechas de creación y actualización
+    timestamps: true,
+    collection: 'notificaciones'
 });
 
-// Definir la asociación con Usuario
-Notificacion.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' });
-
-export default Notificacion;
+const Notificacion = mongoose.models.Notificacion || mongoose.model('Notificacion', notificacionSchema);

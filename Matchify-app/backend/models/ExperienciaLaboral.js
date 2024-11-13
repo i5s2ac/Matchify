@@ -1,53 +1,46 @@
 // models/ExperienciaLaboral.js
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Ajusta la ruta según la ubicación de database.js
-import User from './User.js'; // Asegúrate de que la ruta sea correcta
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+import User from './User.js';  // Changed to ES Module import
 
-const ExperienciaLaboral = sequelize.define('ExperienciaLaboral', {
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
+// Definición del esquema para ExperienciaLaboral
+const experienciaLaboralSchema = new Schema({
+    usuarioId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',  // Changed to match your User model name
+        required: true,
     },
-    usuarioId: { // Ajusté el nombre a 'usuarioId' para mantener la convención
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: User, // Referencia al modelo User
-            key: 'id',
-        },
-    },
-    tituloPuesto: { // Cambié el nombre a camelCase
-        type: DataTypes.STRING,
-        allowNull: false,
+    tituloPuesto: {
+        type: String,
+        required: true,
     },
     empresa: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     ubicacion: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false,
     },
-    fechaInicio: { // Cambié a camelCase
-        type: DataTypes.DATEONLY,
-        allowNull: true,
+    fechaInicio: {
+        type: Date,
+        required: false,
     },
-    fechaFin: { // Cambié a camelCase
-        type: DataTypes.DATEONLY,
-        allowNull: true,
+    fechaFin: {
+        type: Date,
+        required: false,
     },
     descripcion: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-    }
+        type: String,
+        required: false,
+    },
 }, {
-    timestamps: true, // Agrega campos createdAt y updatedAt
-    tableName: 'experiencia_laboral', // Nombre de la tabla en la base de datos
+    timestamps: true,
 });
 
-// Definir la asociación con User
-ExperienciaLaboral.belongsTo(User, { foreignKey: 'usuarioId', as: 'usuario' });
+// Check if model exists before creating it
+const ExperienciaLaboral = mongoose.models.ExperienciaLaboral ||
+    mongoose.model('ExperienciaLaboral', experienciaLaboralSchema);
 
+// Changed to ES Module export
 export default ExperienciaLaboral;

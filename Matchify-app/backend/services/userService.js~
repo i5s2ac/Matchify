@@ -1,0 +1,77 @@
+// services/userService.js
+import { findUserById, updateUser } from '../repositories/userRepository.js';
+
+export const getUserByIdService = async (id) => {
+    return await findUserById(id);
+};
+
+export const updateUserService = async (userId, updates) => {
+    try {
+        const allowedUpdates = ['username', 'email', 'telefono'];
+        const isValidUpdate = Object.keys(updates).every((key) => allowedUpdates.includes(key));
+
+        if (!isValidUpdate) {
+            throw new Error('Invalid updates!');
+        }
+
+        const updatedUser = await updateUser(userId, updates);
+
+        if (!updatedUser) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        return updatedUser;
+    } catch (error) {
+        throw new Error(`Error al actualizar el usuario: ${error.message}`);
+    }
+};
+
+// controllers/userController.js
+import { getUserByIdService, updateUserService } from '../services/userService.js';
+import mongoose from 'mongoose';
+
+export const getUserById = async (req, res) => {
+    const { userId } = req.params;
+
+    console.log('userId recibido:', userId);
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'ID de usuario no válido' });
+    }
+
+    try {
+        const user = await getUserByIdService(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ message: 'Error al obtener el usuario' });
+    }
+};
+
+export const updateUserById = async (req, res) => {
+    const { userId } = req.params;
+    const { username, email, telefono } = req.body;
+
+    try {
+        const updatedUser = await updateUserService(userId, { username, email, telefono });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Perfil actualizado exitosamente',
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error('Error actualizando el usuario:', error);
+
+        if (error.message === 'Invalid updates!') {
+            return res.status(400).json({ success: false, message: error.message });
+        } else if (error.message === 'Usuario no encontrado') {
+            return res.status(404).json({ success: false, message: error.message });
+        }
+
+        return res.status(500).json({ success: false, message: 'Error Interno del Servidor' });
+    }
+};
