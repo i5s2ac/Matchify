@@ -18,19 +18,13 @@ export const updateCV = async (req, res) => {
     const cvData = req.body;
 
     try {
-        console.log('Datos recibidos:', JSON.stringify(cvData, null, 2));
-
         const result = await updateCVService(userId, cvData);
-
-        console.log('Resultado de la actualización:', JSON.stringify(result, null, 2));
-
         res.status(200).json(result);
     } catch (error) {
-        console.error('Error en updateCV:', error);
+        console.error('Error en updateCV controller:', error);
         res.status(500).json({
             success: false,
-            message: error.message,
-            details: error.stack
+            message: error.message
         });
     }
 };

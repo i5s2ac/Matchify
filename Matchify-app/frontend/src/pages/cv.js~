@@ -53,6 +53,7 @@ const CVForm = () => {
         }
     };
 
+
     const handleInputChange = (section, index, field, value) => {
         setCV(prevCV => ({
             ...prevCV,
