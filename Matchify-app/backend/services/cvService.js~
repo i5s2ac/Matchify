@@ -68,39 +68,39 @@ const processUpdates = async (userId, data, updateFunction) => {
 
 export const updateCVService = async (userId, cvData) => {
     try {
-        const { certificacion = [], ...otherSections } = cvData;
+        // Validar la estructura de los datos
+        validateCVData(cvData);
 
-        // Procesar certificaciones
-        let certificacionResult = [];
-        if (certificacion.length > 0) {
-            try {
-                certificacionResult = await updateCertificacion(userId, certificacion);
+        const { educacion = [], certificacion = [], experienciaLaboral = [], idioma = [], skill = [] } = cvData;
 
-                // Verificar si hay algún null en los resultados
-                if (certificacionResult.some(result => result === null)) {
-                    throw new Error('Error al actualizar una o más certificaciones');
-                }
-            } catch (error) {
-                console.error('Error actualizando certificaciones:', error);
-                throw error;
-            }
-        }
-
-        // Procesar otras secciones aquí si es necesario...
+        // Procesar cada sección en paralelo
+        const [
+            educacionResult,
+            certificacionResult,
+            experienciaLaboralResult,
+            idiomaResult,
+            skillResult
+        ] = await Promise.all([
+            processUpdates(userId, educacion, updateEducacion),
+            processUpdates(userId, certificacion, updateCertificacion),
+            processUpdates(userId, experienciaLaboral, updateExperienciaLaboral),
+            processUpdates(userId, idioma, updateIdioma),
+            processUpdates(userId, skill, updateSkill)
+        ]);
 
         return {
             success: true,
             data: {
+                educacion: educacionResult,
                 certificacion: certificacionResult,
-                educacion: [],
-                experienciaLaboral: [],
-                idioma: [],
-                skill: []
+                experienciaLaboral: experienciaLaboralResult,
+                idioma: idiomaResult,
+                skill: skillResult
             }
         };
     } catch (error) {
         console.error('Error en updateCVService:', error);
-        throw error;
+        throw new Error(`Error al actualizar el CV: ${error.message}`);
     }
 };
 

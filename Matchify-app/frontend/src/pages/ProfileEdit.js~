@@ -53,26 +53,22 @@ const ProfileEditPage = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:3001/user/${userId}`, userData);
-
-            if (response.data.success) {
-                await MySwal.fire({
-                    title: 'Perfil actualizado exitosamente!',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+            await axios.put(`http://localhost:3001/user/${userId}`, userData);
+            MySwal.fire({
+                title: 'Perfil actualizado exitosamente!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            setTimeout(() => {
                 navigate(-1);
-            } else {
-                throw new Error(response.data.message || 'Error al actualizar el perfil');
-            }
+            }, 1500); // Redirige después de 1.5 segundos
         } catch (error) {
             console.error('Error al actualizar el perfil:', error);
-            const errorMessage = error.response?.data?.message || 'Error al actualizar el perfil.';
-
+            setError('Error al actualizar el perfil.');
             MySwal.fire({
                 title: 'Error',
-                text: errorMessage,
+                text: 'Hubo un error al actualizar el perfil. Por favor, intenta de nuevo.',
                 icon: 'error',
                 confirmButtonText: 'Entendido'
             });
