@@ -83,7 +83,48 @@ const updateDocument = async (Model, usuarioId, data) => {
     );
 };
 
-export const updateEducacion = (usuarioId, educacionData) => updateDocument(Educacion, usuarioId, educacionData);
+export const updateEducacion = async (usuarioId, educacionData) => {
+    try {
+        const results = await Promise.all(
+            educacionData.map(async (item) => {
+                if (!item._id) {
+                    throw new Error('Se requiere _id para actualizar la educación');
+                }
+
+                const existingEducacion = await Educacion.findOne({
+                    _id: item._id,
+                    usuarioId: usuarioId
+                });
+
+                if (!existingEducacion) {
+                    throw new Error(`No se encontró la educación con id ${item._id}`);
+                }
+
+                const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
+
+                const updated = await Educacion.findByIdAndUpdate(
+                    item._id,
+                    {
+                        ...updateData,
+                        updatedAt: new Date()
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
+                );
+
+                return updated;
+            })
+        );
+
+        return results;
+    } catch (error) {
+        console.error('Error en updateEducacion:', error);
+        throw error;
+    }
+};
+
 export const updateCertificacion = async (usuarioId, certificacionData) => {
     try {
         const results = await Promise.all(
@@ -92,7 +133,6 @@ export const updateCertificacion = async (usuarioId, certificacionData) => {
                     throw new Error('Se requiere _id para actualizar la certificación');
                 }
 
-                // Verificar que el documento existe y pertenece al usuario
                 const existingCert = await Certificacion.findOne({
                     _id: item._id,
                     usuarioId: usuarioId
@@ -102,10 +142,8 @@ export const updateCertificacion = async (usuarioId, certificacionData) => {
                     throw new Error(`No se encontró la certificación con id ${item._id}`);
                 }
 
-                // Remover campos que no queremos actualizar
                 const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
 
-                // Realizar la actualización
                 const updated = await Certificacion.findByIdAndUpdate(
                     item._id,
                     {
@@ -113,8 +151,8 @@ export const updateCertificacion = async (usuarioId, certificacionData) => {
                         updatedAt: new Date()
                     },
                     {
-                        new: true,         // Retorna el documento actualizado
-                        runValidators: true // Ejecuta las validaciones del esquema
+                        new: true,
+                        runValidators: true
                     }
                 );
 
@@ -128,9 +166,132 @@ export const updateCertificacion = async (usuarioId, certificacionData) => {
         throw error;
     }
 };
-export const updateExperienciaLaboral = (usuarioId, experienciaLaboralData) => updateDocument(ExperienciaLaboral, usuarioId, experienciaLaboralData);
-export const updateIdioma = (usuarioId, idiomaData) => updateDocument(Idioma, usuarioId, idiomaData);
-export const updateSkill = (usuarioId, skillData) => updateDocument(Skill, usuarioId, skillData);
+
+export const updateExperienciaLaboral = async (usuarioId, experienciaLaboralData) => {
+    try {
+        const results = await Promise.all(
+            experienciaLaboralData.map(async (item) => {
+                if (!item._id) {
+                    throw new Error('Se requiere _id para actualizar la experiencia laboral');
+                }
+
+                const existingExp = await ExperienciaLaboral.findOne({
+                    _id: item._id,
+                    usuarioId: usuarioId
+                });
+
+                if (!existingExp) {
+                    throw new Error(`No se encontró la experiencia laboral con id ${item._id}`);
+                }
+
+                const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
+
+                const updated = await ExperienciaLaboral.findByIdAndUpdate(
+                    item._id,
+                    {
+                        ...updateData,
+                        updatedAt: new Date()
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
+                );
+
+                return updated;
+            })
+        );
+
+        return results;
+    } catch (error) {
+        console.error('Error en updateExperienciaLaboral:', error);
+        throw error;
+    }
+};
+
+export const updateIdioma = async (usuarioId, idiomaData) => {
+    try {
+        const results = await Promise.all(
+            idiomaData.map(async (item) => {
+                if (!item._id) {
+                    throw new Error('Se requiere _id para actualizar el idioma');
+                }
+
+                const existingIdioma = await Idioma.findOne({
+                    _id: item._id,
+                    usuarioId: usuarioId
+                });
+
+                if (!existingIdioma) {
+                    throw new Error(`No se encontró el idioma con id ${item._id}`);
+                }
+
+                const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
+
+                const updated = await Idioma.findByIdAndUpdate(
+                    item._id,
+                    {
+                        ...updateData,
+                        updatedAt: new Date()
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
+                );
+
+                return updated;
+            })
+        );
+
+        return results;
+    } catch (error) {
+        console.error('Error en updateIdioma:', error);
+        throw error;
+    }
+};
+
+export const updateSkill = async (usuarioId, skillData) => {
+    try {
+        const results = await Promise.all(
+            skillData.map(async (item) => {
+                if (!item._id) {
+                    throw new Error('Se requiere _id para actualizar la habilidad');
+                }
+
+                const existingSkill = await Skill.findOne({
+                    _id: item._id,
+                    usuarioId: usuarioId
+                });
+
+                if (!existingSkill) {
+                    throw new Error(`No se encontró la habilidad con id ${item._id}`);
+                }
+
+                const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
+
+                const updated = await Skill.findByIdAndUpdate(
+                    item._id,
+                    {
+                        ...updateData,
+                        updatedAt: new Date()
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
+                );
+
+                return updated;
+            })
+        );
+
+        return results;
+    } catch (error) {
+        console.error('Error en updateSkill:', error);
+        throw error;
+    }
+};
 
 // Eliminar un registro
 const deleteDocument = async (Model, usuarioId, id) => {
