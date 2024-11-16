@@ -15,6 +15,7 @@ services:
       - ./backend:/usr/src/app
     depends_on:
       - db
+
     restart: always  # Add restart policy
 
   frontend:

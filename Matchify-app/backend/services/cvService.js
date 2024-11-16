@@ -68,34 +68,46 @@ const processUpdates = async (userId, data, updateFunction) => {
 
 export const updateCVService = async (userId, cvData) => {
     try {
-        const { certificacion = [], ...otherSections } = cvData;
+        const { certificacion = [], educacion = [], experienciaLaboral = [], idioma = [], skill = [] } = cvData;
 
         // Procesar certificaciones
         let certificacionResult = [];
         if (certificacion.length > 0) {
-            try {
-                certificacionResult = await updateCertificacion(userId, certificacion);
-
-                // Verificar si hay algún null en los resultados
-                if (certificacionResult.some(result => result === null)) {
-                    throw new Error('Error al actualizar una o más certificaciones');
-                }
-            } catch (error) {
-                console.error('Error actualizando certificaciones:', error);
-                throw error;
-            }
+            certificacionResult = await updateCertificacion(userId, certificacion);
         }
 
-        // Procesar otras secciones aquí si es necesario...
+        // Procesar educación
+        let educacionResult = [];
+        if (educacion.length > 0) {
+            educacionResult = await updateEducacion(userId, educacion);
+        }
+
+        // Procesar experiencia laboral
+        let experienciaLaboralResult = [];
+        if (experienciaLaboral.length > 0) {
+            experienciaLaboralResult = await updateExperienciaLaboral(userId, experienciaLaboral);
+        }
+
+        // Procesar idiomas
+        let idiomaResult = [];
+        if (idioma.length > 0) {
+            idiomaResult = await updateIdioma(userId, idioma);
+        }
+
+        // Procesar habilidades
+        let skillResult = [];
+        if (skill.length > 0) {
+            skillResult = await updateSkill(userId, skill);
+        }
 
         return {
             success: true,
             data: {
                 certificacion: certificacionResult,
-                educacion: [],
-                experienciaLaboral: [],
-                idioma: [],
-                skill: []
+                educacion: educacionResult,
+                experienciaLaboral: experienciaLaboralResult,
+                idioma: idiomaResult,
+                skill: skillResult
             }
         };
     } catch (error) {
@@ -103,6 +115,7 @@ export const updateCVService = async (userId, cvData) => {
         throw error;
     }
 };
+
 
 export const deleteCVSectionService = async (userId, section, id) => {
     try {

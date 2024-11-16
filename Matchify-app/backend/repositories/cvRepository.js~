@@ -84,7 +84,50 @@ const updateDocument = async (Model, usuarioId, data) => {
 };
 
 export const updateEducacion = (usuarioId, educacionData) => updateDocument(Educacion, usuarioId, educacionData);
-export const updateCertificacion = (usuarioId, certificacionData) => updateDocument(Certificacion, usuarioId, certificacionData);
+export const updateCertificacion = async (usuarioId, certificacionData) => {
+    try {
+        const results = await Promise.all(
+            certificacionData.map(async (item) => {
+                if (!item._id) {
+                    throw new Error('Se requiere _id para actualizar la certificación');
+                }
+
+                // Verificar que el documento existe y pertenece al usuario
+                const existingCert = await Certificacion.findOne({
+                    _id: item._id,
+                    usuarioId: usuarioId
+                });
+
+                if (!existingCert) {
+                    throw new Error(`No se encontró la certificación con id ${item._id}`);
+                }
+
+                // Remover campos que no queremos actualizar
+                const { _id, usuarioId: uid, createdAt, updatedAt, __v, ...updateData } = item;
+
+                // Realizar la actualización
+                const updated = await Certificacion.findByIdAndUpdate(
+                    item._id,
+                    {
+                        ...updateData,
+                        updatedAt: new Date()
+                    },
+                    {
+                        new: true,         // Retorna el documento actualizado
+                        runValidators: true // Ejecuta las validaciones del esquema
+                    }
+                );
+
+                return updated;
+            })
+        );
+
+        return results;
+    } catch (error) {
+        console.error('Error en updateCertificacion:', error);
+        throw error;
+    }
+};
 export const updateExperienciaLaboral = (usuarioId, experienciaLaboralData) => updateDocument(ExperienciaLaboral, usuarioId, experienciaLaboralData);
 export const updateIdioma = (usuarioId, idiomaData) => updateDocument(Idioma, usuarioId, idiomaData);
 export const updateSkill = (usuarioId, skillData) => updateDocument(Skill, usuarioId, skillData);

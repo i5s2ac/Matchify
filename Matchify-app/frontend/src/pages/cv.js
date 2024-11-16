@@ -189,21 +189,44 @@ const CVForm = () => {
             const cleanedData = validateAndCleanData(cv);
             console.log('Datos limpiados antes de enviar:', cleanedData);
 
+            const existingSections = {
+                educacion: cv.educacion.filter(item => item._id),  // Cambié `id` por `_id`
+                certificacion: cv.certificacion.filter(item => item._id),
+                experienciaLaboral: cv.experienciaLaboral.filter(item => item._id),
+                idioma: cv.idioma.filter(item => item._id),
+                skill: cv.skill.filter(item => item._id)
+            };
+
+            const newSections = {
+                educacion: cv.educacion.filter(item => !item._id),
+                certificacion: cv.certificacion.filter(item => !item._id),
+                experienciaLaboral: cv.experienciaLaboral.filter(item => !item._id),
+                idioma: cv.idioma.filter(item => !item._id),
+                skill: cv.skill.filter(item => !item._id)
+            };
+
             let response;
 
-            if (isEditing) {
-                // Si está editando, enviar todo como PUT
-                response = await axios.put(`http://localhost:3001/cv/${userId}`, cleanedData);
-            } else {
-                // Si está creando nuevo, enviar como POST
-                response = await axios.post(`http://localhost:3001/cv/${userId}`, cleanedData);
+            // Realiza un PUT para las secciones existentes
+            if (Object.values(existingSections).some(section => section.length > 0)) {
+                console.log('Actualizando secciones existentes con PUT:', existingSections);
+                response = await axios.put(`http://localhost:3001/cv/${userId}`, existingSections);
+                if (!response.data.success) {
+                    throw new Error(response.data.message);
+                }
             }
 
-            if (!response.data.success) {
-                throw new Error(response.data.message);
+            // Realiza un POST para las nuevas secciones
+            const newSectionsValues = Object.values(newSections).some(section => section.length > 0);
+            if (newSectionsValues) {
+                console.log('Creando nuevas secciones con POST:', newSections);
+                response = await axios.post(`http://localhost:3001/cv/${userId}`, newSections);
+                if (!response.data.success) {
+                    throw new Error(response.data.message);
+                }
             }
 
-            await Swal.fire({
+            Swal.fire({
                 title: 'Éxito',
                 text: `CV ${isEditing ? 'actualizado' : 'creado'} exitosamente`,
                 icon: 'success',
