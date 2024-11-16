@@ -47,7 +47,7 @@ const ofertaEmpleoSchema = new mongoose.Schema({
     },
     modalidad: {
         type: String,
-        enum: ['Presencial', 'Virtual', 'Híbrido'],
+        enum: ['Presencial', 'Virtual', 'Hibrido'],
         default: 'Presencial'
     },
     tipoTrabajo: {

@@ -46,15 +46,9 @@ const ofertaEmpleoSchema = new mongoose.Schema({
         default: []
     },
     modalidad: {
-<<<<<<< Updated upstream
-        type: DataTypes.ENUM('Presencial', 'Virtual', 'Hibrido'),
-        allowNull: false,
-        defaultValue: 'Presencial',
-=======
         type: String,
         enum: ['Presencial', 'Virtual', 'Híbrido'],
         default: 'Presencial'
->>>>>>> Stashed changes
     },
     tipoTrabajo: {
         type: String,
