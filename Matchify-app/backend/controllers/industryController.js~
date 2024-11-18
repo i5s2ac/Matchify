@@ -1,7 +1,5 @@
 // controllers/industryController.js
 import { getIndustriesService } from '../services/industryService.js';
-import { getClient } from '../config/redisClient.js'; // Ajusta la ruta según la ubicación real del archivo
-
 
 // Ruta para obtener todas las industrias con caché
 export const getIndustries = async (req, res) => {
